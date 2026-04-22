@@ -1,0 +1,21 @@
+{
+  "projects": {
+    "/Users/kacperjelonek": "kacperjelonek",
+    "/Users/kacperjelonek/Documents/projekty/MTT16": "mtt16",
+    "/Users/kacperjelonek/Documents/projekty/MTT16/motherboard/software": "software",
+    "/Users/kacperjelonek/informatyka/komunikator_zajebisty": "komunikator-zajebisty",
+    "/Users/kacperjelonek/Documents/informatyka/bluetooth_clipboard": "bluetooth-clipboard",
+    "/Users/kacperjelonek/Documents/projekty/MTT16/motherboard/software/src": "src",
+    "/Users/kacperjelonek/Library/Application Support/com.mitchellh.ghostty": "com-mitchellh-ghostty",
+    "/Users/kacperjelonek/.config/kitty": "kitty",
+    "/Users/kacperjelonek/.config": "config",
+    "/Users/kacperjelonek/.config/tmux": "tmux",
+    "/Users/kacperjelonek/.config/nvim": "nvim",
+    "/Users/kacperjelonek/Documents/studia/remote_lab": "remote-lab",
+    "/Users/kacperjelonek/Documents/studia/remote_lab/uec/uec2-lab1-vga-gr1-kjelonek-tjachymiak": "uec2-lab1-vga-gr1-kjelonek-tjachymiak",
+    "/Users/kacperjelonek/Documents/studia/sem4/ppo": "ppo",
+    "/Users/kacperjelonek/Documents/studia/sem4/ppo/cpp/test": "test",
+    "/Users/kacperjelonek/.config/iamb": "iamb",
+    "/Users/kacperjelonek/.dotfiles": "dotfiles"
+  }
+}

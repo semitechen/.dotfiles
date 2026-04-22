@@ -1,0 +1,4 @@
+[submodule "wiki"]
+	path = wiki
+	url = https://github.com/fabioluciano/tmux-powerkit.wiki.git
+	branch = master

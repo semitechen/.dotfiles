@@ -1,0 +1,13 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    },
+    "ui": {
+      "theme": "~/.gemini/tokyonight_night.json"
+    }
+  },
+  "general": {
+    "preferredEditor": "neovim"
+  }
+}

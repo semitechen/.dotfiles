@@ -1,0 +1,55 @@
+[profiles."beeper"]
+user_id = "@semitechen:beeper.com"
+url = "https://matrix.beeper.com"
+
+[settings]
+image_preview = { size = { height = 15, width = 60 } }
+
+read_receipt_display = true
+
+reaction_shortcode_display = false
+
+external_edit_file_suffix = ".md"
+
+desktop_notifications = true
+
+username_display = "displayname"
+
+
+[settings.users]
+"@semitechen:beeper.com" = { name = "You" }
+
+
+[settings.sort]
+rooms = ["favorite", "recent"]
+dms = ["favorite", "recent"]
+spaces = ["favorite", "recent"]
+
+
+[macros.normal]
+"\\" = ":chats<CR>"
+"l" = ":react heart<CR>"
+"r" = ":reply<CR>i"
+
+[macros.insert]
+# Lowercase Polish Characters (Alt + letter)
+"<A-a>" = "ą"
+"<A-c>" = "ć"
+"<A-e>" = "ę"
+"<A-l>" = "ł"
+"<A-n>" = "ń"
+"<A-o>" = "ó"
+"<A-s>" = "ś"
+"<A-x>" = "ź"
+"<A-z>" = "ż"
+
+# Uppercase Polish Characters (Alt + Shift + letter)
+"<A-A>" = "Ą"
+"<A-C>" = "Ć"
+"<A-E>" = "Ę"
+"<A-L>" = "Ł"
+"<A-N>" = "Ń"
+"<A-O>" = "Ó"
+"<A-S>" = "Ś"
+"<A-X>" = "Ź"
+"<A-Z>" = "Ż"
