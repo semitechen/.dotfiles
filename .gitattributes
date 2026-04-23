@@ -1,2 +1,3 @@
 gemini/.gemini/google_accounts.json filter=git-crypt diff=git-crypt
 gemini/.gemini/oauth_creds.json filter=git-crypt diff=git-crypt
+spotatui/.config/spotatui/client.yml filter=git-crypt diff=git-crypt

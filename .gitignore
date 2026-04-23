@@ -22,3 +22,6 @@ gemini/.gemini/installation_id
 
 # Tmux plugins (if you prefer to install them via TPM on new machine)
 # tmux/.config/tmux/plugins/
+
+spotatui/.config/spotatui/.spotify_token_cache_*.json
+spotatui/.config/spotatui/streaming_cache/
