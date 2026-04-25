@@ -31,6 +31,7 @@ keybindings:
   open_settings: ctrl-,
   save_settings: alt-s
   listening_party: ctrl-p
+  like_track: F
 behavior:
   seek_milliseconds: 5000
   volume_increment: 10
@@ -40,6 +41,7 @@ behavior:
   show_loading_indicator: true
   enforce_wide_search_bar: false
   enable_global_song_count: true
+  disable_mouse_inputs: false
   enable_discord_rpc: true
   discord_rpc_client_id: null
   enable_announcements: true
