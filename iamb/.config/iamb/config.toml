@@ -27,9 +27,12 @@ spaces = ["favorite", "recent"]
 
 
 [macros.normal]
-"\\" = ":chats<CR>"
+"\\" = ":rooms<CR>"
 "l" = ":react heart<CR>"
 "r" = ":reply<CR>i"
+"u" = ":upload \"\"<Left>"
+"o" = ":open<CR>"
+
 
 [macros.insert]
 # Lowercase Polish Characters (Alt + letter)
