@@ -28,10 +28,11 @@ spaces = ["favorite", "recent"]
 
 [macros.normal]
 "\\" = ":rooms<CR>"
-"l" = ":react heart<CR>"
-"r" = ":reply<CR>i"
-"u" = ":upload \"\"<Left>"
-"o" = ":open<CR>"
+"<A-l>" = ":react heart<CR>"
+"<A-r>" = ":reply<CR>i"
+"<A-u>" = ":upload \"\"<Left>"
+"<A-o>" = ":open<CR>"
+"y" = "v\"+y"
 
 
 [macros.insert]
