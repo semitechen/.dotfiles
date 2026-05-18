@@ -4,8 +4,14 @@
 TMPFILE=$(mktemp /tmp/aerc-image.XXXXXX).png
 cat > "$TMPFILE"
 
-# 1. Upscale the image using macOS 'sips' so it's never "really small"
-sips -Z 1200 "$TMPFILE" >/dev/null 2>&1
+# 1. Upscale the image
+if command -v sips >/dev/null 2>&1; then
+    sips -Z 1200 "$TMPFILE" >/dev/null 2>&1
+elif command -v magick >/dev/null 2>&1; then
+    magick "$TMPFILE" -resize 1200x1200\> "$TMPFILE"
+elif command -v convert >/dev/null 2>&1; then
+    convert "$TMPFILE" -resize 1200x1200\> "$TMPFILE"
+fi
 
 # 2. Force the protocol
 export TERM=xterm-kitty
