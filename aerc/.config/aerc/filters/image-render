@@ -1,0 +1,21 @@
+#!/bin/sh
+# aerc filter for kitty icat (optimized for scaling and compatibility)
+
+TMPFILE=$(mktemp /tmp/aerc-image.XXXXXX).png
+cat > "$TMPFILE"
+
+# 1. Upscale the image using macOS 'sips' so it's never "really small"
+sips -Z 1200 "$TMPFILE" >/dev/null 2>&1
+
+# 2. Force the protocol
+export TERM=xterm-kitty
+
+clear
+# 3. Use stream mode and REDIRECT to /dev/tty to bypass aerc's internal terminal limits
+kitty +kitten icat --transfer-mode=stream --stdin=yes --detection-timeout=0 < "$TMPFILE" > /dev/tty
+
+echo ""
+echo "--- Press Enter to return to aerc ---"
+read _ < /dev/tty
+
+rm "$TMPFILE"

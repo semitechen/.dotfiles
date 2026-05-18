@@ -1,0 +1,84 @@
+# TokyoNight Powerline styleset for aerc
+# Matches the colors from the user's tmux config
+# Simplified for transparency and reliability
+
+default.fg=#a9b1d6
+default.bg=default
+
+error.fg=#f7768e
+error.bold=true
+warning.fg=#e0af68
+success.fg=#9ece6a
+
+statusline_default.fg=#a9b1d6
+statusline_default.bg=default
+statusline_error.fg=#f7768e
+statusline_error.bg=default
+statusline_error.bold=true
+statusline_success.fg=#9ece6a
+statusline_success.bg=default
+
+# Message List
+msglist_default.fg=#a9b1d6
+msglist_default.bg=default
+msglist_unread.fg=#7aa2f7
+msglist_unread.bold=true
+msglist_marked.fg=#e0af68
+msglist_thread_context.fg=#565f89
+
+# Global Selection Style for Message List
+msglist_*.selected.fg=#7aa2f7
+msglist_*.selected.bg=#283457
+msglist_unread.selected.bold=true
+
+# Directory List (Sidebar)
+dirlist_default.fg=#a9b1d6
+dirlist_default.bg=default
+dirlist_unread.fg=#7aa2f7
+dirlist_unread.bold=true
+
+# Global Selection Style for Directory List
+dirlist_*.selected.fg=#7aa2f7
+dirlist_*.selected.bg=#283457
+dirlist_unread.selected.bold=true
+
+# Tabs (Top part/Accounts)
+tab.fg=#565f89
+tab.bg=default
+tab.selected.fg=#7aa2f7
+tab.selected.bg=#283457
+tab.selected.bold=true
+
+border.fg=#3b4261
+border.bg=default
+
+# Selectors (Popups/Menus)
+selector_default.fg=#7aa2f7
+selector_default.bg=default
+selector_focused.fg=#7aa2f7
+selector_focused.bg=#283457
+selector_focused.bold=true
+
+header.fg=#7aa2f7
+header.bold=true
+
+[viewer]
+url.fg=#7ad9ff
+url.underline=true
+header.fg=#7aa2f7
+header.bold=true
+signature.fg=#565f89
+diff_meta.fg=#7aa2f7
+diff_chunk.fg=#bb9af7
+diff_add.fg=#9ece6a
+diff_del.fg=#f7768e
+quote_1.fg=#7aa2f7
+quote_2.fg=#9ece6a
+quote_3.fg=#e0af68
+quote_4.fg=#f7768e
+quote_x.fg=#bb9af7
+
+[user]
+# Simple statusline colors
+account.fg=#7aa2f7
+path.fg=#565f89

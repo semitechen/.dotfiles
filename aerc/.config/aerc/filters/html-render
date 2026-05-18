@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# aerc filter to view HTML emails with w3m, optimized for maximum cleanliness.
+# This version strikes a balance: it keeps links clickable but removes layout noise.
+
+WIDTH=110
+if [ -n "$COLUMNS" ] && [ "$COLUMNS" -lt 110 ]; then
+    WIDTH=$COLUMNS
+fi
+
+# We use the same network isolation logic as the default aerc filter
+if ! [ "$(basename $0)" = "html-unsafe" ]; then
+    export http_proxy='127.0.0.1:1'
+    export https_proxy='127.0.0.1:1'
+fi
+
+# Flags explained:
+# -cols $WIDTH: Wrap at terminal width
+# -dump: Non-interactive output
+# -T text/html: Force HTML interpretation
+# -no-graph: Disable box-drawing characters
+# -o display_link_number=1: Keep links numbered so they are clickable/findable
+# -o indent_incr=2: Smaller indentation for nested tables (makes it less "sparse")
+# -o display_borders=0: No table borders
+# -o ignore_null_img_alt=1: Don't show [image] for spacer gifs
+
+w3m -I UTF-8 -O UTF-8 -T text/html \
+    -cols "$WIDTH" \
+    -dump \
+    -no-graph \
+    -o display_link_number=1 \
+    -o indent_incr=2 \
+    -o display_borders=0 \
+    -o display_image=0 \
+    -o fold_line=1 \
+    -o disable_center=1 \
+    -o ignore_null_img_alt=1 | \
+sed -E \
+    -e 's/\[cid?\]//gI' \
+    -e 's/\[image\]//gI' \
+    -e 's/^[[:space:]]*#[[:space:]]*$//g' \
+    -e 's/^[[:space:]]*\*[[:space:]]*$//g' \
+    -e 's/^[[:space:]]*~[[:space:]]*$//g' \
+    -e 's/[[:space:]]+$//' | \
+cat -s
