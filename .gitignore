@@ -25,3 +25,9 @@ gemini/.gemini/installation_id
 
 spotatui/.config/spotatui/.spotify_token_cache_*.json
 spotatui/.config/spotatui/streaming_cache/
+
+# Neovim
+nvim/.config/nvim/*.bak
+nvim/.config/nvim/*.log
+nvim/.config/nvim/undo/
+beets/.config/beets/spotify_token.json

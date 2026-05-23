@@ -54,120 +54,69 @@ return {
   },
 
   {
-    'stevearc/oil.nvim',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-      'refractalize/oil-git-status.nvim',
-    },
-    lazy = false,
+    'mikavilpas/yazi.nvim',
+    event = 'VeryLazy',
     keys = {
       {
         '\\',
         function()
-          local oil = require 'oil'
-          if vim.bo.filetype == 'oil' then
-            vim.g.last_oil_dir = oil.get_current_dir()
-            oil.close()
-          else
-            if vim.g.last_oil_dir then
-              oil.open(vim.g.last_oil_dir)
-            else
-              oil.open()
+          local yazi = require('yazi')
+          local yazi_win = nil
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            if vim.api.nvim_win_is_valid(win) then
+              local buf = vim.api.nvim_win_get_buf(win)
+              if vim.bo[buf].filetype == 'yazi' then
+                yazi_win = win
+                break
+              end
             end
           end
+
+          if yazi_win then
+            vim.api.nvim_win_close(yazi_win, true)
+          else
+            yazi.toggle()
+          end
         end,
-        desc = 'Toggle Full Screen Explorer',
+        desc = 'Toggle yazi explorer',
+      },
+      {
+        '<leader>cw',
+        function() require('yazi').yazi(vim.fn.getcwd()) end,
+        desc = "Open yazi in nvim's working directory",
       },
     },
-    config = function()
-      require('oil').setup {
-        default_file_explorer = true,
-        skip_confirm_for_simple_edits = true,
-        constrain_cursor = 'name',
-        delete_to_trash = true,
-        win_options = {
-          signcolumn = 'yes:2',
-          scrolloff = 0,
-        },
-        columns = { 'icon' },
-        keymaps = {
-          ['<2-LeftMouse>'] = {
-            callback = function()
-              local mousepos = vim.fn.getmousepos()
-              if mousepos and mousepos.line > 0 then pcall(vim.api.nvim_win_set_cursor, 0, { mousepos.line, 0 }) end
-              local oil = require 'oil'
-              local entry = oil.get_cursor_entry()
-              if not entry then return end
-              local target = oil.get_current_dir() .. entry.name
-              if entry.type == 'directory' then
-                oil.open(target)
-              else
-                vim.ui.open(target)
-              end
-            end,
-          },
-          ['<S-CR>'] = {
-            callback = function()
-              local oil = require 'oil'
-              local entry = oil.get_cursor_entry()
-              if not entry then return end
-              local target = oil.get_current_dir() .. entry.name
-              if entry.type == 'directory' then
-                oil.open(target)
-              else
-                vim.cmd('badd ' .. vim.fn.fnameescape(target))
-                vim.cmd 'redrawtabline'
-                vim.notify('Opened in background: ' .. entry.name)
-              end
-            end,
-          },
-          ['<CR>'] = 'actions.select',
-          ['<C-l>'] = 'actions.select',
-          ['q'] = 'actions.close',
-          ['<leader>d'] = {
-            callback = function()
-              local oil = require 'oil'
-              local entry = oil.get_cursor_entry()
-              if not entry or entry.type == 'directory' then return end
-              local target = oil.get_current_dir() .. entry.name
-              vim.fn.jobstart({ 'ripdrag', target }, { detach = true })
-              vim.notify('Dragging: ' .. entry.name)
-            end,
-          },
-        },
-      }
-      require('oil-git-status').setup {
-        show_ignored = false,
-        symbols = {
-          index = {
-            ['!'] = '◌',
-            ['?'] = '●',
-            [' A'] = '',
-            ['A'] = '',
-            ['C'] = 'C',
-            ['D'] = '',
-            ['M'] = '',
-            ['R'] = 'R',
-            ['T'] = 'T',
-            ['U'] = 'U',
-            [' '] = ' ',
-          },
-          working_tree = {
-            ['!'] = '◌',
-            ['?'] = '●',
-            [' A'] = '',
-            ['A'] = '',
-            ['C'] = 'C',
-            ['D'] = '',
-            ['M'] = '',
-            ['R'] = 'R',
-            ['T'] = 'T',
-            ['U'] = 'U',
-            [' '] = ' ',
-          },
-        },
-      }
-    end,
+    ---@type YaziConfig
+    opts = {
+      open_for_directories = true,
+      floating_window_options = {
+        border = 'rounded',
+        relative = 'editor',
+        width = 0.9,
+        height = 0.8,
+      },
+      keymaps = {
+        show_help = '<f1>',
+        open_file_in_vertical_split = '<C-v>',
+        open_file_in_horizontal_split = '<C-x>',
+        open_file_in_tab = '<C-t>',
+        open_file_in_background = '<S-CR>',
+        send_to_quickfix_list = '<C-q>',
+      },
+      hooks = {
+        yazi_opened = function(_, yazi_buffer_id, _)
+          vim.keymap.set('t', '\\', function()
+            vim.api.nvim_win_close(0, true)
+          end, { buffer = yazi_buffer_id, desc = 'Close yazi' })
+
+          vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = yazi_buffer_id })
+
+          vim.keymap.set('n', '<leader>d', function()
+            vim.notify('ripdrag is intended for Linux; current platform is MacOS', vim.log.levels.WARN)
+          end, { buffer = yazi_buffer_id, desc = 'Drag file' })
+        end,
+      },
+    },
   },
 
   {
