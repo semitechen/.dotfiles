@@ -23,8 +23,11 @@ gemini/.gemini/installation_id
 # Tmux plugins (if you prefer to install them via TPM on new machine)
 # tmux/.config/tmux/plugins/
 
+#spotatui
 spotatui/.config/spotatui/.spotify_token_cache_*.json
 spotatui/.config/spotatui/streaming_cache/
+spotatui/.config/spotatui/history/
+spotatui/.config/spotatui/spotatui-recap.html
 
 # Neovim
 nvim/.config/nvim/*.bak
@@ -32,9 +35,7 @@ nvim/.config/nvim/*.log
 nvim/.config/nvim/undo/
 
 #beets
-beets/.config/beets/spotify_secrets.json
 beets/.config/beets/spotify_token.json
-beets/.config/beets/discogs_secrets.json
 beets/.config/beets/discogs_token.json
 
 #raycast
