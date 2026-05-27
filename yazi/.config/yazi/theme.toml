@@ -1,0 +1,22 @@
+[manager]
+hovered = { fg = "#7aa2f7", bg = "#3b4261", underline = true }
+preview_hovered = { underline = true }
+
+[mode]
+normal_main = { fg = "#15161e", bg = "#7aa2f7", bold = true }
+normal_alt  = { fg = "#7aa2f7", bg = "#3b4261" }
+select_main = { fg = "#15161e", bg = "#bb9af7", bold = true }
+select_alt  = { fg = "#bb9af7", bg = "#3b4261" }
+unset_main  = { fg = "#15161e", bg = "#7dcfff", bold = true }
+unset_alt   = { fg = "#7dcfff", bg = "#3b4261" }
+
+[status]
+separator_open  = ""
+separator_close = ""
+main_bg = "#16161e"
+main_fg = "#a9b1d6"
+
+alt_bg = "#3b4261"
+alt_fg = "#a9b1d6"
+
+separator_style = { fg = "#3b4261", bg = "#16161e" }
