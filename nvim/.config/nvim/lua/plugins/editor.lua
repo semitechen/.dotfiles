@@ -107,9 +107,15 @@ return {
 			},
 			hooks = {
 				before_opening_window = function(opts)
-					opts.row = 1
-					opts.height = opts.height - 1
+				    -- Start at row 1 (below bufferline)
+				    opts.row = 1
+				    -- Height is full screen minus 2 (bufferline + statusline)
+				    opts.height = vim.o.lines - 2
+				    -- Ensure it's full width
+				    opts.width = vim.o.columns
+				    opts.col = 0
 				end,
+
 				yazi_opened = function(_, yazi_buffer_id, _)
 					vim.keymap.set("t", "\\", function()
 						vim.api.nvim_win_close(0, true)
