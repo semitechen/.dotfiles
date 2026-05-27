@@ -30,4 +30,14 @@ spotatui/.config/spotatui/streaming_cache/
 nvim/.config/nvim/*.bak
 nvim/.config/nvim/*.log
 nvim/.config/nvim/undo/
+
+#beets
+beets/.config/beets/spotify_secrets.json
 beets/.config/beets/spotify_token.json
+beets/.config/beets/discogs_secrets.json
+beets/.config/beets/discogs_token.json
+
+#raycast
+raycast/.config/raycast/extensions/
+raycast/.config/raycast/ai/
+!raycast/**/*.rayconfig
