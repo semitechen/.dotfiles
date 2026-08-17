@@ -1,0 +1,3 @@
+#!/bin/sh
+# Portable wrapper to force Beets to respect the system $PATH
+exec essentia_extractor "$@"

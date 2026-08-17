@@ -1,0 +1,185 @@
+include:
+  - spotify_secrets.yaml
+  - discogs_secrets.yaml
+
+pluginpath: ~/.config/beets/plugins
+
+directory: ~/Music/dj/music
+library: ~/Music/dj/beetslibrary.blb
+
+import:
+  move: yes
+  write: yes
+  resume: ask
+  incremental: yes
+  quiet_fallback: asis
+  singletons: yes
+  threaded: no
+
+paths:
+  default: %the{$primary_artist}/$artist - $title
+  singleton: %the{$primary_artist}/$artist - $title
+
+plugins:
+  - spotify
+  - lastgenre
+  - discogsgenre
+  - ftintitle
+  - xtractor
+  - the
+  - inline
+  - fromfilename
+  - info
+  - dj_playlists
+  - spotmissing
+  - edit
+
+types:
+  bpm: float
+  danceability: float
+
+spotify:
+  mode: list
+  show_failures: no
+  tiebreak: popularity
+  search_query_ascii: yes
+  tokenfile: spotify_token.json
+  search_limit: 5
+
+discogsgenre:
+  auto: yes
+  write: yes
+  fallback_genre: Obscure
+
+lastgenre:
+  auto: yes
+  force: yes
+  canonical: yes
+  count: 1
+  source: track
+  fallback: 'Obscure' 
+  import:
+    write: yes
+
+whitelist: no
+
+xtractor:
+  essentia_extractor: essentia_extractor
+  use_library: no
+  auto: yes
+  write: yes
+  force: yes
+  threads: 4
+  extractor_profile:
+    outputFormat: json
+    outputFrames: 0
+    lowlevel:
+      frameSize: 2048
+      hopSize: 1024
+    highlevel:
+      compute: 0
+  low_level_targets:
+    bpm:
+      path: rhythm.bpm
+      type: integer
+    initial_key:
+      path: tonal.key_edma.key
+      type: string
+    initial_key_scale:
+      path: tonal.key_edma.scale
+      type: string
+    danceability:
+      path: rhythm.danceability
+      type: float
+    beats_count:
+      path: rhythm.beats_count
+      type: integer
+    average_loudness:
+      path: lowlevel.average_loudness
+      type: float
+
+item_fields:
+  primary_artist: |
+    a = artist
+    for sep in [',', '&', 'feat.', 'feat ', 'ft.', 'feat', 'ft', 'vs.', 'vs ', ' x ']:
+        a = a.split(sep)[0]
+    return a.strip()
+  camelot: |
+    try:
+        k = initial_key
+    except NameError:
+        return ''
+    try:
+        scale = initial_key_scale
+    except NameError:
+        scale = 'major'
+    if scale == 'minor' and not k.endswith('m'):
+        k += 'm'
+    cmap = {
+        'Abm':'1A', 'G#m':'1A', 'B':'1B', 'Ebm':'2A', 'D#m':'2A', 'F#':'2B', 'Gb':'2B',
+        'Bbm':'3A', 'A#m':'3A', 'Db':'3B', 'C#':'3B', 'Fm':'4A', 'Ab':'4B', 'G#':'4B',
+        'Cm':'5A', 'Eb':'5B', 'D#':'5B', 'Gm':'6A', 'Bb':'6B', 'A#':'6B', 'Dm':'7A', 'F':'7B',
+        'Am':'8A', 'C':'8B', 'Em':'9A', 'G':'9B', 'Bm':'10A', 'D':'10B',
+        'F#m':'11A', 'Gbm':'11A', 'A':'11B', 'C#m':'12A', 'Dbm':'12A', 'E':'12B'
+    }
+    return cmap.get(k, k)
+  camelot_sort: |
+    try:
+        k = initial_key
+    except NameError:
+        return '99Z'
+    try:
+        scale = initial_key_scale
+    except NameError:
+        scale = 'major'
+    if scale == 'minor' and not k.endswith('m'):
+        k += 'm'
+    cmap = {
+        'Abm':'01A', 'G#m':'01A', 'B':'01B', 'Ebm':'02A', 'D#m':'02A', 'F#':'02B', 'Gb':'02B',
+        'Bbm':'03A', 'A#m':'03A', 'Db':'03B', 'C#':'03B', 'Fm':'04A', 'Ab':'04B', 'G#':'04B',
+        'Cm':'05A', 'Eb':'05B', 'D#':'05B', 'Gm':'06A', 'Bb':'06B', 'A#':'06B', 'Dm':'07A', 'F':'07B',
+        'Am':'08A', 'C':'08B', 'Em':'09A', 'G':'09B', 'Bm':'10A', 'D':'10B',
+        'F#m':'11A', 'Gbm':'11A', 'A':'11B', 'C#m':'12A', 'Dbm':'12A', 'E':'12B'
+    }
+    return cmap.get(k, k)
+  bpm_bin: |
+    try:
+        b = int(float(bpm)) // 10 * 10
+        return "{:03d}".format(b)
+    except:
+        return "000"
+
+ftintitle:
+  auto: yes
+  drop: no
+
+dj_playlists:
+  relative_to: ~/Music/dj/playlists
+  playlist_dir: ~/Music/dj/playlists
+  auto: yes
+  extm3u: yes
+  playlists:
+    # 1. Dynamic generation for manual tags
+    - name: '$playlist.m3u'
+      query: 'playlist::^.+ bpm_bin+ camelot_sort+ bpm+'
+      
+    # 2. Rule-based static playlists
+    - name: '00_Master_Playlist.m3u'
+      query: 'playlist::^.+ bpm_bin+ camelot_sort+ bpm+'
+    - name: '01_Warmup_Groove.m3u'
+      query: 'bpm:120..133 danceability:1.4..3.0 bpm_bin+ camelot_sort+ bpm+'
+    - name: '02_Peak_Driving_Industrial.m3u'
+      query: 'bpm:135..160 danceability:0.0..1.3 bpm_bin+ camelot_sort+ bpm+'
+    - name: '03_Peak_Bouncy.m3u'
+      query: 'bpm:135..180 danceability:1.31..3.0 bpm_bin+ camelot_sort+ bpm+'
+    - name: '04_Pure_Techno.m3u'
+      query: 'genres:techno -genres:break bpm_bin+ camelot_sort+'
+
+
+match:
+  strong_rec_thresh: 0.30
+  medium_rec_thresh: 0.40
+  preferred:
+    countries: ['PL', 'DE', 'US', 'GB']
+    media: ['Digital Media|File']
+  sources: [spotify, albumart]
