@@ -1,5 +1,6 @@
-gemini/.gemini/google_accounts.json filter=git-crypt diff=git-crypt
-gemini/.gemini/oauth_creds.json filter=git-crypt diff=git-crypt
 spotatui/.config/spotatui/client.yml filter=git-crypt diff=git-crypt
+beets/.config/beets/spotify_secrets.yaml filter=git-crypt diff=git-crypt
+beets/.config/beets/discogs_secrets.yaml filter=git-crypt diff=git-crypt
 aerc/.config/aerc/accounts.conf filter=git-crypt diff=git-crypt
+aerc/.config/aerc/signatures/** filter=git-crypt diff=git-crypt
 vpn/** filter=git-crypt diff=git-crypt

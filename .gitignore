@@ -14,11 +14,10 @@ Thumbs.db
 *.swp
 *.swo
 
-# Gemini CLI transient files
-gemini/.gemini/history/
-gemini/.gemini/tmp/
-gemini/.gemini/state.json
-gemini/.gemini/installation_id
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Tmux plugins (if you prefer to install them via TPM on new machine)
 # tmux/.config/tmux/plugins/
@@ -37,6 +36,8 @@ nvim/.config/nvim/undo/
 #beets
 beets/.config/beets/spotify_token.json
 beets/.config/beets/discogs_token.json
+beets/.config/beets/.spotmissing-token
+beets/.config/beets/state.pickle
 
 #raycast
 raycast/.config/raycast/extensions/
