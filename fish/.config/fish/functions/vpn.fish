@@ -39,5 +39,20 @@ function vpn --description 'Connect to a VPN server by name'
     echo "Using credentials from: "(string replace "$HOME/.vpn/" "" $auth_file)
     echo "Connecting to VPN using: "(basename $target_config)"..."
 
-    sudo (brew --prefix)/sbin/openvpn --config $target_config --auth-user-pass $auth_file
+    set -l openvpn_bin "openvpn"
+    if command -v brew >/dev/null; and test -x (brew --prefix)/sbin/openvpn
+        set openvpn_bin (brew --prefix)/sbin/openvpn
+    end
+
+    sudo $openvpn_bin --config $target_config --auth-user-pass $auth_file
+
+    echo "Disconnecting and cleanup"
+    if test (uname) = "Darwin"
+        sudo dscacheutil -flushcache
+        sudo killall -HUP mDNSResponder 2>/dev/null
+    else if command -v resolvectl >/dev/null
+        sudo resolvectl flush-caches 2>/dev/null
+    else if command -v systemctl >/dev/null; and systemctl is-active --quiet systemd-resolved 2>/dev/null
+        sudo systemctl restart systemd-resolved 2>/dev/null
+    end
 end

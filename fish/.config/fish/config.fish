@@ -6,3 +6,7 @@ end
 set -gx LC_TIME en_US.UTF-8
 
 source ~/.config/fish/conf.d/tokyonight_night.fish
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "$HOME/.local/bin" $PATH
