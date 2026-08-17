@@ -13,8 +13,7 @@ cd ~/dotfiles
 git-crypt unlock /path/to/key
 
 # Link packages
-stow fish nvim tmux gemini git
-```
+stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi
 
 ## Submodules
 
@@ -26,12 +25,16 @@ git submodule update --init --recursive --remote
 
 ## Structure
 
-- `fish/`: Shell configuration.
+- `aerc/`: TUI email client configuration.
+- `beets/`: Music library management and DJ plugins.
+- `fish/`: Shell configuration and utility functions.
+- `git/`: Git configuration.
 - `nvim/`: Neovim configuration (submodule).
+- `spotatui/`: Spotify TUI client configuration.
 - `tmux/`: Terminal multiplexer and plugins.
-- `gemini/`: Gemini CLI (encrypted).
-- `git/`: Git config.
-- `wallpapers/`: System backgrounds.
+- `vpn/`: OpenVPN profiles and credentials (encrypted).
+- `wallpapers/`: System backgrounds and new tab pages.
+- `yazi/`: Terminal file manager configuration.
 
 ## Security
 

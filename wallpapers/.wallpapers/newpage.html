@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Organic Grid - Flowing Gradient</title>
+    <style>
+        /* Minimal reset for full-screen, zero-scroll layout */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000; 
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gridCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gridCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+
+        // Dark Theme Palette: Re-engineered to eliminate muddy greys.
+        // Uses highly saturated but dark colors in a continuous analogous sequence
+        // (Purple -> Blue -> Teal -> Green) so transitions stay rich and vibrant.
+        const palette = [
+            [5, 5, 12],       // Deep void blue/black
+            [20, 10, 35],     // Dark shadow purple
+            [45, 20, 75],     // Deep saturated purple
+            [25, 45, 90],     // Deep saturated Tokyo Night blue
+            [15, 50, 60],     // Deep saturated teal
+            [10, 35, 25],     // Deep saturated green
+            [4, 8, 6]         // Deep void green/black
+        ];
+
+        // Decreased target size slightly so the grid has more "resolution" to draw smooth gradients
+        const targetSize = 20; 
+        let cols, rows, cellWidth, cellHeight;
+
+        // Handle window resizing and retina displays
+        function resize() {
+            const dpr = window.devicePixelRatio || 1;
+            
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            
+            ctx.scale(dpr, dpr);
+
+            cols = Math.round(window.innerWidth / targetSize) || 1;
+            rows = Math.round(window.innerHeight / targetSize) || 1;
+            
+            cellWidth = window.innerWidth / cols;
+            cellHeight = window.innerHeight / rows;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Organic fluid noise function (an ultra-fast alternative to Perlin Noise)
+        // Generates a smooth, flowing value between 0.0 and 1.0 based on position and time
+        function getNoise(x, y, t) {
+            // A balanced scale: zoomed out enough for many blobs, but close enough to stay smooth
+            const scale = 0.006; 
+            x *= scale;
+            y *= scale;
+            t *= 0.0001; 
+
+            // Smoother wave combination without high-frequency multipliers (removed the 1.5x)
+            // This prevents sharp "ridges" from forming in the noise map
+            let v = 0;
+            v += Math.sin(x + t);
+            v += Math.cos(y + t * 0.8);
+            v += Math.sin((x + y) * 0.6 - t * 1.1);
+            v += Math.cos((x - y) * 0.6 + t * 0.9);
+
+            // 'v' is normally between -4 and +4. We map it gently to 0.0-1.0
+            let n = (v + 4) / 8; 
+            
+            // Clamp strictly to 0.0 - 1.0
+            return Math.max(0, Math.min(1, n));
+        }
+
+        // Interpolates between colors in the palette based on the noise value
+        function getColor(t) {
+            let scaledT = t * (palette.length - 1);
+            let idx1 = Math.floor(scaledT);
+            let idx2 = Math.min(idx1 + 1, palette.length - 1);
+            let fract = scaledT - idx1;
+            
+            // Apply easing to the fraction for buttery smooth color blending
+            let easeFract = fract * fract * (3 - 2 * fract);
+
+            let r = Math.round(palette[idx1][0] + (palette[idx2][0] - palette[idx1][0]) * easeFract);
+            let g = Math.round(palette[idx1][1] + (palette[idx2][1] - palette[idx1][1]) * easeFract);
+            let b = Math.round(palette[idx1][2] + (palette[idx2][2] - palette[idx1][2]) * easeFract);
+            
+            return `rgb(${r},${g},${b})`;
+        }
+
+        // The high-performance animation loop
+        function animate(time) {
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    
+                    // Sample the noise based on the absolute pixel position of the cell's center
+                    let px = x * cellWidth + (cellWidth / 2);
+                    let py = y * cellHeight + (cellHeight / 2);
+                    
+                    // Get a smooth 0.0 to 1.0 noise value
+                    let noiseVal = getNoise(px, py, time);
+
+                    // Set the color based on the noise
+                    ctx.fillStyle = getColor(noiseVal);
+                    
+                    // Snap to exact integer coordinates to prevent anti-aliasing blur
+                    const drawX = Math.floor(x * cellWidth);
+                    const drawY = Math.floor(y * cellHeight);
+                    const drawW = Math.ceil(cellWidth) + 1; // +1px overlap prevents gaps
+                    const drawH = Math.ceil(cellHeight) + 1;
+
+                    ctx.fillRect(drawX, drawY, drawW, drawH);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Kick off the loop
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
