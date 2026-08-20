@@ -19,8 +19,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Tmux plugins (if you prefer to install them via TPM on new machine)
-# tmux/.config/tmux/plugins/
+# Tmux plugins
+tmux/.config/tmux/plugins/
 
 #spotatui
 spotatui/.config/spotatui/.spotify_token_cache_*.json
