@@ -9,6 +9,11 @@ keybindings:
   jump_to_start: ctrl-a
   jump_to_end: ctrl-e
   jump_to_album: a
+  dj_open: ctrl-j
+  dj_toggle_auto_queue: ctrl-t
+  dj_vibe_shift: ctrl-y
+  dj_toggle_fresh_only: ctrl-o
+  dj_pick_model: ctrl-g
   jump_to_artist_album: A
   jump_to_context: o
   manage_devices: d
@@ -56,16 +61,8 @@ behavior:
   discord_rpc_client_id: null
   enable_announcements: true
   announcement_feed_url: null
-  seen_announcement_ids:
-  - 2026-02-27-major-refactor-complete
-  - 2026-05-19-sonos-help-wanted
-  - 2026-06-12-self-update-broken
-  - 2026-06-12-lua-scripting
-  - 2026-07-04-multi-source-playback
-  - 2026-08-06-discord-community
   enable_monthly_recap_prompt: true
-  shuffle_enabled: false
-  active_source: Spotify
+  pin_community_playlist: true
   liked_icon: ♥
   shuffle_icon: 🔀
   repeat_track_icon: 🔂
@@ -74,18 +71,29 @@ behavior:
   paused_icon: ⏸
   set_window_title: true
   visualizer_style: BarGraph
-  dismissed_announcements: []
   relay_server_url: wss://spotatui-party.spotatui.workers.dev/ws
   stop_after_current_track: false
-  sidebar_width_percent: 20
-  playbar_height_rows: 6
-  library_height_percent: 30
   startup_behavior: continue
   disable_auto_update: false
   auto_update_delay: '0'
   draw_cover_art: true
   draw_cover_art_forced: false
   playbar_cover_art_size_percent: 200
+  mcp_enabled: false
+  dj_backend: agent_cli
+  dj_agent_command:
+  - claude
+  - -p
+  dj_agent_prompt_via: null
+  dj_agent_timeout_secs: 90
+  dj_agent_model: null
+  dj_model: null
+  dj_base_url: null
+  dj_api_key: null
+  dj_batch_size: 6
+  dj_history_period: 30d
+  dj_avoid_library: false
+  dj_configured: null
   keepawake_enabled: true
   enable_media_keys: true
   sync_token: null
@@ -93,7 +101,6 @@ behavior:
   subsonic_url: null
   subsonic_username: null
   subsonic_password: null
-  radio_stations: null
   ytdlp_path: null
   gauge_filled_icon: ⣿
   gauge_unfilled_icon: ⣉
@@ -114,6 +121,9 @@ behavior:
   default_sort_recently_played: default
   sidebar_position: left
   playbar_position: bottom
+  sidebar_width_percent: 20
+  playbar_height_rows: 6
+  library_height_percent: 30
   small_terminal_width: 150
   small_terminal_height: 45
 theme:
