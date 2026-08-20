@@ -43,3 +43,8 @@ beets/.config/beets/state.pickle
 raycast/.config/raycast/extensions/
 raycast/.config/raycast/ai/
 !raycast/**/*.rayconfig
+
+# Gemini / Antigravity
+gemini/.gemini/config/projects/
+gemini/.gemini/config/.migrated
+
