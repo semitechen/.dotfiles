@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+import sys
+import re
+
+URL_REGEX = re.compile(r"((?:https?|ftp|file)://[^\s\"<>]+)")
+MAX_DISPLAY_LEN = 45
+
+def shorten_match(match):
+    raw_url = match.group(1)
+    trailing = ""
+    
+    # Strip trailing punctuation that attaches to URLs in natural language
+    while raw_url and raw_url[-1] in ".,;:!?)>]'\"":
+        trailing = raw_url[-1] + trailing
+        raw_url = raw_url[:-1]
+    
+    if not raw_url:
+        return trailing
+        
+    if len(raw_url) <= MAX_DISPLAY_LEN:
+        return f"\033]8;;{raw_url}\033\\{raw_url}\033]8;;\033\\{trailing}"
+    
+    # Visible text is truncated with ellipsis, but underlying hyperlink contains full URL
+    short_text = raw_url[:MAX_DISPLAY_LEN - 1] + "…"
+    return f"\033]8;;{raw_url}\033\\{short_text}\033]8;;\033\\{trailing}"
+
+def main():
+    try:
+        content = sys.stdin.read()
+        if not content:
+            return
+        
+        # Replace long URLs with clean OSC 8 hyperlinks
+        processed = URL_REGEX.sub(shorten_match, content)
+        
+        # Hard limit consecutive blank lines (max 1 empty line between blocks)
+        cleaned = re.sub(r"\n{3,}", "\n\n", processed)
+        sys.stdout.write(cleaned)
+    except (BrokenPipeError, KeyboardInterrupt):
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()

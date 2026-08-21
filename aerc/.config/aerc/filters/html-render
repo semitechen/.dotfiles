@@ -1,45 +1,147 @@
-#!/bin/sh
+#!/usr/bin/env python3
+import sys
+import os
+import re
+import subprocess
+import shutil
 
-# aerc filter to view HTML emails with w3m, optimized for maximum cleanliness.
-# This version strikes a balance: it keeps links clickable but removes layout noise.
+def run_w3m(html_data, width):
+    cmd = [
+        "w3m",
+        "-I", "UTF-8",
+        "-O", "UTF-8",
+        "-T", "text/html",
+        "-cols", str(width),
+        "-dump",
+        "-no-graph",
+        "-o", "display_link_number=1",
+        "-o", "indent_incr=0",
+        "-o", "display_borders=0",
+        "-o", "display_image=0",
+        "-o", "fold_line=1",
+        "-o", "disable_center=1",
+        "-o", "ignore_null_img_alt=1"
+    ]
+    env = os.environ.copy()
+    if not os.path.basename(sys.argv[0]).startswith("html-unsafe"):
+        env["http_proxy"] = "127.0.0.1:1"
+        env["https_proxy"] = "127.0.0.1:1"
 
-WIDTH=110
-if [ -n "$COLUMNS" ] && [ "$COLUMNS" -lt 110 ]; then
-    WIDTH=$COLUMNS
-fi
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env, text=True)
+    out, _ = proc.communicate(input=html_data)
+    return out
 
-# We use the same network isolation logic as the default aerc filter
-if ! [ "$(basename $0)" = "html-unsafe" ]; then
-    export http_proxy='127.0.0.1:1'
-    export https_proxy='127.0.0.1:1'
-fi
+def post_process_w3m(text):
+    if not text:
+        return ""
 
-# Flags explained:
-# -cols $WIDTH: Wrap at terminal width
-# -dump: Non-interactive output
-# -T text/html: Force HTML interpretation
-# -no-graph: Disable box-drawing characters
-# -o display_link_number=1: Keep links numbered so they are clickable/findable
-# -o indent_incr=2: Smaller indentation for nested tables (makes it less "sparse")
-# -o display_borders=0: No table borders
-# -o ignore_null_img_alt=1: Don't show [image] for spacer gifs
+    # 1. Extract raw link references map from bottom
+    raw_links = {}
+    ref_pattern = re.compile(r"^\s*\[([0-9]+)\]\s+((?:https?|mailto|ftp)://\S+)", re.MULTILINE)
+    for match in ref_pattern.finditer(text):
+        raw_links[match.group(1)] = match.group(2)
 
-w3m -I UTF-8 -O UTF-8 -T text/html \
-    -cols "$WIDTH" \
-    -dump \
-    -no-graph \
-    -o display_link_number=1 \
-    -o indent_incr=2 \
-    -o display_borders=0 \
-    -o display_image=0 \
-    -o fold_line=1 \
-    -o disable_center=1 \
-    -o ignore_null_img_alt=1 | \
-sed -E \
-    -e 's/\[cid?\]//gI' \
-    -e 's/\[image\]//gI' \
-    -e 's/^[[:space:]]*#[[:space:]]*$//g' \
-    -e 's/^[[:space:]]*\*[[:space:]]*$//g' \
-    -e 's/^[[:space:]]*~[[:space:]]*$//g' \
-    -e 's/[[:space:]]+$//' | \
-cat -s
+    # 2. Strip the raw References/Visible links block
+    for marker in ("References:", "Visible links:"):
+        split_idx = text.rfind(marker)
+        if split_idx != -1:
+            text = text[:split_idx].rstrip()
+            break
+
+    # 3. Strip layout noise: [File], [image], [cid:...], [cid], [ci]
+    text = re.sub(r"\[(?:File|image|Image|cid:[^\]]*|cid|ci)\]", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^\s*(?:File|image|Image)\s*$", "", text, flags=re.MULTILINE | re.IGNORECASE)
+    text = re.sub(r"^[ \t]*#[ \t]*$", "", text, flags=re.MULTILINE)
+    text = re.sub(r"^[ \t]*\*[ \t]*$", "", text, flags=re.MULTILINE)
+    text = re.sub(r"^[ \t]*~[ \t]*$", "", text, flags=re.MULTILINE)
+
+    # 4. Deduplicate URLs and assign clean sequential numbers [1], [2], ...
+    unique_urls = []
+    url_to_num = {}
+    for old_num, url in raw_links.items():
+        if url not in url_to_num:
+            unique_urls.append(url)
+            url_to_num[url] = len(unique_urls)
+
+    # 5. Replace [N]Label with 'Label [num]' in the body text
+    def replace_numbered_label(match):
+        old_num = match.group(1)
+        label = match.group(2).strip()
+        url = raw_links.get(old_num)
+        if not url:
+            return label if label else ""
+        
+        new_num = url_to_num[url]
+        if label:
+            return f"{label} [{new_num}]"
+        return ""
+
+    text = re.sub(r"\[([0-9]+)\]([^\[\n]*?)(?=\[[0-9]+\]|\n|$)", replace_numbered_label, text)
+
+    # 6. Enforce strict line alignment and collapse whitespace
+    cleaned_lines = []
+    for line in text.split("\n"):
+        line_stripped = line.strip()
+        if not line_stripped:
+            if cleaned_lines and cleaned_lines[-1] != "":
+                cleaned_lines.append("")
+            continue
+            
+        if re.match(r"^[─\-=]{3,}$", line_stripped):
+            cleaned_lines.append("────────────────────────────────────────────────────────────")
+            continue
+            
+        if line.lstrip().startswith(">") or line.lstrip().startswith("│"):
+            content = line.lstrip(">│ ").strip()
+            cleaned_lines.append("  │ " + re.sub(r"[ \t]{2,}", " ", content))
+            continue
+            
+        if re.match(r"^\s*(?:•|\*|-)\s+", line):
+            content = re.sub(r"^\s*(?:•|\*|-)\s+", "", line).strip()
+            cleaned_lines.append("  • " + re.sub(r"[ \t]{2,}", " ", content))
+            continue
+        if re.match(r"^\s*\d+\.\s+", line):
+            content = line.strip()
+            cleaned_lines.append("  " + re.sub(r"[ \t]{2,}", " ", content))
+            continue
+            
+        cleaned_lines.append(re.sub(r"[ \t]{2,}", " ", line_stripped))
+
+    body = "\n".join(cleaned_lines)
+    body = re.sub(r"\n{3,}", "\n\n", body).strip()
+
+    # 7. Append clean, deduplicated Links footer if links exist
+    if unique_urls:
+        links_footer = ["\n────────────────────────────────────────────────────────────", "Links:"]
+        for i, url in enumerate(unique_urls, 1):
+            links_footer.append(f"[{i}] {url}")
+        body = body + "\n" + "\n".join(links_footer)
+
+    return body + "\n"
+
+def main():
+    try:
+        raw_html = sys.stdin.read()
+        if not raw_html:
+            return
+
+        width = 110
+        if "COLUMNS" in os.environ:
+            try:
+                col = int(os.environ["COLUMNS"])
+                if col < 110:
+                    width = col
+            except ValueError:
+                pass
+
+        if shutil.which("w3m"):
+            w3m_out = run_w3m(raw_html, width)
+            final_text = post_process_w3m(w3m_out)
+            sys.stdout.write(final_text)
+        else:
+            sys.stdout.write(raw_html)
+    except (BrokenPipeError, KeyboardInterrupt):
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()
