@@ -97,7 +97,7 @@ behavior:
   keepawake_enabled: true
   enable_media_keys: true
   sync_token: null
-  local_music_path: ~/Music/dj/music/
+  local_music_path: /Users/kacperjelonek/Music/dj/music
   subsonic_url: null
   subsonic_username: null
   subsonic_password: null
