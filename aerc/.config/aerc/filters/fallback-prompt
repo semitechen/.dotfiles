@@ -1,0 +1,9 @@
+#!/bin/sh
+cat > /dev/null
+
+echo "Attachment: ${AERC_FILENAME:-Attachment} (${AERC_MIME_TYPE:-application/octet-stream})"
+echo ""
+echo "  [o / O] Open with default application"
+echo "  [p]     Print attachment directly"
+echo "  [|]     Pipe attachment to command"
+echo "  [S]     Save attachment to disk"

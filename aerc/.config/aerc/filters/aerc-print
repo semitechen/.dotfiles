@@ -1,0 +1,128 @@
+#!/bin/sh
+#
+# aerc-print: Universal attachment and document printing script for aerc.
+# Handles direct printing of attachments (PDF, DOC/DOCX, images, text, etc.)
+# Converts non-PDF formats to PDF before spooling to CUPS (lp) to preserve
+# formatting, fonts, and layout. Portable across macOS and Linux (Arch Linux).
+
+# Discover cupsfilter binary if present
+CUPSFILTER="cupsfilter"
+if command -v cupsfilter >/dev/null 2>&1; then
+    CUPSFILTER="cupsfilter"
+elif [ -x /usr/sbin/cupsfilter ]; then
+    CUPSFILTER="/usr/sbin/cupsfilter"
+fi
+
+# Ensure CUPS lp client is available
+if ! command -v lp >/dev/null 2>&1; then
+    printf '%s\n' "Error: 'lp' command not found. Please install CUPS." >&2
+    exit 1
+fi
+
+# Determine input file or read from standard input
+CLEAN_INPUT=0
+if [ -n "$1" ] && [ -f "$1" ]; then
+    INPUT="$1"
+else
+    INPUT="$(mktemp "${TMPDIR:-/tmp}/aerc-in.XXXXXX")"
+    cat > "$INPUT"
+    CLEAN_INPUT=1
+fi
+
+# Extract file extension from argument or aerc environment variable
+EXT=""
+if [ -n "$1" ]; then
+    EXT="$(printf '%s' "${1##*.}" | tr '[:upper:]' '[:lower:]')"
+elif [ -n "$AERC_FILENAME" ]; then
+    EXT="$(printf '%s' "${AERC_FILENAME##*.}" | tr '[:upper:]' '[:lower:]')"
+fi
+
+# Detect MIME type if file utility is available
+MIME=""
+if command -v file >/dev/null 2>&1; then
+    MIME="$(file -b --mime-type "$INPUT" 2>/dev/null || true)"
+fi
+
+PDF_FILE=""
+CLEAN_PDF=0
+
+# If already a PDF, print directly without conversion
+if [ "$EXT" = "pdf" ] || [ "$MIME" = "application/pdf" ]; then
+    PDF_FILE="$INPUT"
+else
+    PDF_TMP="$(mktemp "${TMPDIR:-/tmp}/aerc-out.XXXXXX")"
+    rm -f "$PDF_TMP"
+    PDF_FILE="${PDF_TMP}.pdf"
+    CLEAN_PDF=1
+
+    case "$EXT" in
+        doc|docx|odt|rtf)
+            if command -v textutil >/dev/null 2>&1; then
+                TMP_HTML="$(mktemp "${TMPDIR:-/tmp}/aerc-html.XXXXXX")"
+                rm -f "$TMP_HTML"
+                TMP_HTML="${TMP_HTML}.html"
+                textutil -convert html "$INPUT" -output "$TMP_HTML" 2>/dev/null || true
+                if [ -s "$TMP_HTML" ]; then
+                    if command -v weasyprint >/dev/null 2>&1; then
+                        weasyprint "$TMP_HTML" "$PDF_FILE" >/dev/null 2>&1 || true
+                    elif command -v "$CUPSFILTER" >/dev/null 2>&1; then
+                        "$CUPSFILTER" -m application/pdf "$TMP_HTML" > "$PDF_FILE" 2>/dev/null || true
+                    fi
+                    rm -f "$TMP_HTML"
+                fi
+            elif command -v soffice >/dev/null 2>&1; then
+                TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/aerc-soffice.XXXXXX")"
+                soffice --headless --convert-to pdf "$INPUT" --outdir "$TMP_DIR" >/dev/null 2>&1 || true
+                CONVERTED="$(find "$TMP_DIR" -name "*.pdf" -type f 2>/dev/null | head -n 1)"
+                if [ -n "$CONVERTED" ] && [ -s "$CONVERTED" ]; then
+                    cp "$CONVERTED" "$PDF_FILE"
+                fi
+                rm -rf "$TMP_DIR"
+            fi
+            ;;
+        png|jpg|jpeg|tiff|bmp|gif|webp)
+            if command -v sips >/dev/null 2>&1; then
+                sips -s format pdf "$INPUT" --out "$PDF_FILE" >/dev/null 2>&1 || true
+            elif command -v img2pdf >/dev/null 2>&1; then
+                img2pdf "$INPUT" -o "$PDF_FILE" >/dev/null 2>&1 || true
+            elif command -v magick >/dev/null 2>&1; then
+                magick "$INPUT" "$PDF_FILE" >/dev/null 2>&1 || true
+            elif command -v convert >/dev/null 2>&1; then
+                convert "$INPUT" "$PDF_FILE" >/dev/null 2>&1 || true
+            elif command -v "$CUPSFILTER" >/dev/null 2>&1; then
+                "$CUPSFILTER" -m application/pdf "$INPUT" > "$PDF_FILE" 2>/dev/null || true
+            fi
+            ;;
+        html|htm)
+            if command -v weasyprint >/dev/null 2>&1; then
+                weasyprint "$INPUT" "$PDF_FILE" >/dev/null 2>&1 || true
+            elif command -v "$CUPSFILTER" >/dev/null 2>&1; then
+                "$CUPSFILTER" -m application/pdf "$INPUT" > "$PDF_FILE" 2>/dev/null || true
+            fi
+            ;;
+        *)
+            if command -v weasyprint >/dev/null 2>&1; then
+                weasyprint "$INPUT" "$PDF_FILE" >/dev/null 2>&1 || true
+            elif command -v "$CUPSFILTER" >/dev/null 2>&1; then
+                "$CUPSFILTER" -m application/pdf "$INPUT" > "$PDF_FILE" 2>/dev/null || true
+            fi
+            ;;
+    esac
+
+    # Fallback to original input if conversion did not produce a valid non-empty PDF
+    if [ ! -s "$PDF_FILE" ]; then
+        [ "$CLEAN_PDF" -eq 1 ] && rm -f "$PDF_FILE"
+        PDF_FILE="$INPUT"
+        CLEAN_PDF=0
+    fi
+fi
+
+# Print document to default CUPS printer
+lp "$PDF_FILE"
+
+# Background asynchronous cleanup to avoid race conditions while CUPS spools the job
+(
+    sleep 15
+    [ "$CLEAN_INPUT" -eq 1 ] && rm -f "$INPUT"
+    [ "$CLEAN_PDF" -eq 1 ] && [ "$PDF_FILE" != "$INPUT" ] && rm -f "$PDF_FILE"
+) >/dev/null 2>&1 &
