@@ -100,7 +100,7 @@ return {
 			{
 				"<leader>cs",
 				function()
-					vim.ui.input({ prompt = "SSH Target (e.g. 10.176.8.18//home/kjelonek/): " }, function(input)
+					vim.ui.input({ prompt = "SSH Target (e.g. pul//home/kjelonek/): " }, function(input)
 						if input and input ~= "" then
 							vim.cmd("edit scp://" .. input)
 						end
