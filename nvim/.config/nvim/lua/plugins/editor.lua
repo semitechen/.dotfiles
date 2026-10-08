@@ -64,6 +64,12 @@ return {
 			{
 				"\\",
 				function()
+					local path = vim.api.nvim_buf_get_name(0)
+					if path:match("^scp://") or path:match("^sftp://") then
+						vim.cmd("Explore")
+						return
+					end
+
 					local yazi = require("yazi")
 					local yazi_win = nil
 					for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -82,14 +88,25 @@ return {
 						yazi.toggle()
 					end
 				end,
-				desc = "Toggle yazi explorer",
+				desc = "Toggle yazi (or netrw for remote)",
 			},
 			{
 				"<leader>cw",
 				function()
-					require("yazi").yazi(vim.fn.getcwd())
+					require("yazi").yazi(nil, vim.fn.getcwd())
 				end,
 				desc = "Open yazi in nvim's working directory",
+			},
+			{
+				"<leader>cs",
+				function()
+					vim.ui.input({ prompt = "SSH Target (e.g. 10.176.8.18//home/kjelonek/): " }, function(input)
+						if input and input ~= "" then
+							vim.cmd("edit scp://" .. input)
+						end
+					end)
+				end,
+				desc = "Open SSH/SFTP directory via netrw",
 			},
 		},
 		---@type YaziConfig
