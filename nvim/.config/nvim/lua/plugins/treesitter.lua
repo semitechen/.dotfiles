@@ -6,7 +6,7 @@ return {
         branch = 'main',
         event = { 'BufReadPre', 'BufNewFile' },
         config = function()
-            local parsers = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+            local parsers = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'systemverilog' }
             require('nvim-treesitter').install(parsers)
 
             local function treesitter_try_attach(buf, language)

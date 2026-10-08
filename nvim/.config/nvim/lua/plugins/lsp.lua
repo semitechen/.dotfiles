@@ -57,6 +57,10 @@ return {
                 clangd = {},
                 pyright = {},
                 stylua = {},
+                verible = {
+                    cmd = { "verible-verilog-ls", "--rules_config_search" },
+                },
+                svls = {},
                 lua_ls = {
                     on_init = function(client)
                         if client.workspace_folders then
@@ -89,9 +93,13 @@ return {
             local ensure_installed = vim.tbl_keys(servers or {})
             require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
 
+            local capabilities = require('blink.cmp').get_lsp_capabilities()
             for name, server in pairs(servers) do
-                vim.lsp.config(name, server)
-                vim.lsp.enable(name)
+                if name ~= 'stylua' then
+                    server.capabilities = vim.tbl_deep_extend('force', capabilities, server.capabilities or {})
+                    vim.lsp.config(name, server)
+                    vim.lsp.enable(name)
+                end
             end
         end,
     },
@@ -114,6 +122,8 @@ return {
             notify_on_error = false,
             formatters_by_ft = {
                 lua = { 'stylua' },
+                verilog = { 'verible' },
+                systemverilog = { 'verible' },
             },
         },
     },
@@ -146,7 +156,7 @@ return {
                 documentation = { auto_show = false, auto_show_delay_ms = 500 },
             },
             sources = {
-                default = { 'lsp', 'path', 'snippets' },
+                default = { 'lsp', 'path', 'snippets', 'buffer' },
             },
             snippets = { preset = 'luasnip' },
             fuzzy = { implementation = 'lua' },
