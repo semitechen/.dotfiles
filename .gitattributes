@@ -4,3 +4,4 @@ beets/.config/beets/discogs_secrets.yaml filter=git-crypt diff=git-crypt
 aerc/.config/aerc/accounts.conf filter=git-crypt diff=git-crypt
 aerc/.config/aerc/signatures/** filter=git-crypt diff=git-crypt
 vpn/** filter=git-crypt diff=git-crypt
+ssh/.ssh/config filter=git-crypt diff=git-crypt

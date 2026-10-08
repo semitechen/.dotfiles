@@ -48,3 +48,7 @@ raycast/.config/raycast/ai/
 gemini/.gemini/config/projects/
 gemini/.gemini/config/.migrated
 
+
+# SSH
+ssh/.ssh/*
+!ssh/.ssh/config
