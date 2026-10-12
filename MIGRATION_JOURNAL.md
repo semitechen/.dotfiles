@@ -15,7 +15,7 @@ This document tracks all system differences, required configuration tweaks, and 
 | **Clipboard** | `pbcopy` / `pbpaste` | `xclip` (X11) | ✅ **Handled**: Neovim uses `"+y` / `"+p` with `xclip`. No macOS clipboard tool invocations remain in dotfiles. |
 | **Terminal Modifiers** | `cmd+t`, `cmd+w`, `cmd+n` in `kitty.conf` | dwm window management / tmux sessions | ✅ **Handled**: Stripped `cmd+` mappings from `kitty.conf`. Terminal splits and windows managed via `tmux` and `dwm`. |
 | **macOS Options** | `macos_option_as_alt yes` | Not applicable (handled by XKB) | ✅ **Handled**: Removed `macos_option_as_alt` from `kitty.conf`. |
-| **Launcher** | `raycast/` (macOS-only) | `dmenu` (X11 / dwm) | ✅ **Handled**: `dmenu_run` configured with Tokyo Night styling on `MODKEY + p`. `raycast/` is excluded from stow on Linux. |
+| **Launcher** | `raycast/` (macOS-only) | `rofi` (X11 / dwm) | ✅ **Handled**: Replaced Raycast with Rofi styled in Tokyo Night (`rofi/`). Bound to `MODKEY + p` in dwm (with `dmenu` as shift fallback). Deleted `raycast/` on `arch` branch. |
 | **Shell Paths** | `fish_variables` has `/opt/homebrew` | Standard `/usr/bin`, `~/.local/bin`, `~/.cargo/bin` | ✅ **Handled**: Reset `fish_user_paths` to `/home/kacperjelonek/.local/bin` and `/home/kacperjelonek/.cargo/bin`. Updated `config.fish` and `tmux.conf`. |
 | **Paths in Configs & DBs** | `/Users/kacperjelonek` | `/home/kacperjelonek` | ✅ **Handled**: Updated `spotatui/config.yml`, `darktable/darktablerc`, and migrated all paths in SQLite `darktable/library.db`. Removed Colima include in `ssh/config`. |
 | **Darktable Secret Backend** | `apple_keychain` | `auto` (libsecret) | ✅ **Handled**: Changed `pwstorage_backend=auto` in `darktablerc`. |
@@ -38,7 +38,7 @@ sudo pacman -S git git-crypt stow fish tmux neovim zoxide fzf ripgrep fd yazi
 sudo pacman -S kitty github-cli darktable
 
 # X11, Window Manager, & Utilities (dwm setup on Framework 13)
-sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip picom dmenu feh brightnessctl wireplumber
+sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip picom rofi dmenu feh brightnessctl wireplumber
 
 # Node & Python (Required for Gemini MCP servers & custom skills)
 sudo pacman -S nodejs npm python python-pip
@@ -66,9 +66,9 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
    git-crypt unlock /path/to/exported-dotfiles.key
    ```
 
-3. **Stow Desired Packages** (skip macOS-only `raycast`):
+3. **Stow Desired Packages**:
    ```bash
-   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru
+   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru rofi
    ```
 
 4. **Install System Keyboard Configuration**:

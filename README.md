@@ -13,7 +13,7 @@ cd ~/.dotfiles
 git-crypt unlock /path/to/key
 
 # Link packages
-stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru
+stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru rofi
 ```
 
 ## Structure
@@ -29,6 +29,7 @@ stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh 
 - `kitty/`: Terminal emulator configuration.
 - `nvim/`: Neovim configuration.
 - `paru/`: Package management wrapper enforcing mandatory comments into `packages.txt`, with pacman/yay redirection.
+- `rofi/`: Application launcher, command runner, and window switcher in Tokyo Night palette (replacing Raycast).
 - `spotatui/`: Spotify TUI client configuration.
 - `tmux/`: Terminal multiplexer and plugins.
 - `vpn/`: OpenVPN profiles and credentials (encrypted).

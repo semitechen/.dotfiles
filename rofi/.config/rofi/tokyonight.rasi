@@ -1,0 +1,113 @@
+/**
+ * Tokyo Night theme for Rofi
+ * Matches Kitty, Neovim, Tmux, and dwm Tokyo Night color scheme
+ **/
+
+* {
+    bg:          #1a1b26;
+    bg-alt:      #24283b;
+    bg-sel:      #28345a;
+    fg:          #c0caf5;
+    fg-dim:      #565f89;
+    accent:      #7aa2f7;
+    urgent:      #f7768e;
+
+    background-color: transparent;
+    text-color:       @fg;
+    margin:           0;
+    padding:          0;
+    spacing:          0;
+}
+
+window {
+    width:            640px;
+    background-color: @bg;
+    border:           2px solid;
+    border-color:     @accent;
+    border-radius:    10px;
+    padding:          16px;
+}
+
+mainbox {
+    spacing:          12px;
+    children:         [ inputbar, listview, mode-switcher ];
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius:    8px;
+    padding:          10px 14px;
+    spacing:          10px;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    text-color:       @accent;
+}
+
+entry {
+    placeholder:       "Search applications, commands, windows...";
+    placeholder-color: @fg-dim;
+    text-color:        @fg;
+}
+
+listview {
+    columns:          1;
+    lines:            8;
+    spacing:          6px;
+    cycle:            true;
+    dynamic:          true;
+    scrollbar:        false;
+}
+
+element {
+    padding:          10px 12px;
+    border-radius:    8px;
+    spacing:          12px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element selected.normal {
+    background-color: @bg-sel;
+    text-color:       @accent;
+}
+
+element selected.active {
+    background-color: @bg-sel;
+    text-color:       @accent;
+}
+
+element-icon {
+    size:             24px;
+}
+
+element-text {
+    vertical-align:   0.5;
+    text-color:       inherit;
+}
+
+mode-switcher {
+    spacing:          10px;
+}
+
+button {
+    padding:          8px 12px;
+    border-radius:    6px;
+    background-color: @bg-alt;
+    text-color:       @fg-dim;
+    horizontal-align: 0.5;
+}
+
+button selected {
+    background-color: @accent;
+    text-color:       @bg;
+}

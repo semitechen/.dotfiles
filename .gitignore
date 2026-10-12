@@ -39,10 +39,6 @@ beets/.config/beets/discogs_token.json
 beets/.config/beets/.spotmissing-token
 beets/.config/beets/state.pickle
 
-#raycast
-raycast/.config/raycast/extensions/
-raycast/.config/raycast/ai/
-!raycast/**/*.rayconfig
 
 # Gemini / Antigravity
 gemini/.gemini/config/projects/
