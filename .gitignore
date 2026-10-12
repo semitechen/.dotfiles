@@ -52,3 +52,6 @@ gemini/.gemini/config/.migrated
 # SSH
 ssh/.ssh/*
 !ssh/.ssh/config
+
+# gh
+gh/.config/gh/*.log
