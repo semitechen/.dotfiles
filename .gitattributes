@@ -6,3 +6,6 @@ aerc/.config/aerc/signatures/** filter=git-crypt diff=git-crypt
 vpn/** filter=git-crypt diff=git-crypt
 ssh/.ssh/config filter=git-crypt diff=git-crypt
 gh/.config/gh/hosts.yml filter=git-crypt diff=git-crypt
+darktable/.config/darktable/darktablerc* filter=git-crypt diff=git-crypt
+darktable/.config/darktable/data.db filter=git-crypt diff=git-crypt
+darktable/.config/darktable/library.db filter=git-crypt diff=git-crypt

@@ -55,3 +55,14 @@ ssh/.ssh/*
 
 # gh
 gh/.config/gh/*.log
+
+# darktable
+darktable/.config/darktable/*.db-snp-*
+darktable/.config/darktable/*.db-pre-*
+darktable/.config/darktable/*.db-journal
+darktable/.config/darktable/*.db-wal
+darktable/.config/darktable/*.db-shm
+darktable/.config/darktable/*.lock
+darktable/.config/darktable/shortcutsrc.backup
+darktable/.config/darktable/shortcutsrc.defaults
+darktable/.config/darktable/shortcutsrc.edit
