@@ -187,8 +187,22 @@ for pkg in "${raw_pkgs[@]}"; do
 done
 
 # 5. Execute real paru / pacman
+# Automatically append --noconfirm to bypass all installation prompts (unless --confirm was explicitly specified)
+exec_args=("$@")
+has_noconfirm=0
+has_confirm=0
+
+for a in "${exec_args[@]}"; do
+    if [ "$a" == "--noconfirm" ]; then has_noconfirm=1; fi
+    if [ "$a" == "--confirm" ]; then has_confirm=1; fi
+done
+
+if [ $has_noconfirm -eq 0 ] && [ $has_confirm -eq 0 ]; then
+    exec_args+=("--noconfirm")
+fi
+
 set +e
-"$REAL_BIN" "$@"
+"$REAL_BIN" "${exec_args[@]}"
 paru_status=$?
 set -e
 
