@@ -33,10 +33,12 @@ plugins:
   - dj_playlists
   - spotmissing
   - edit
+  - types
 
 types:
-  bpm: float
-  danceability: float
+  rpm: int
+  playable_at_both_rpm: bool
+  exclude_from_dj: bool
 
 spotify:
   mode: list
@@ -141,7 +143,11 @@ item_fields:
         'Am':'08A', 'C':'08B', 'Em':'09A', 'G':'09B', 'Bm':'10A', 'D':'10B',
         'F#m':'11A', 'Gbm':'11A', 'A':'11B', 'C#m':'12A', 'Dbm':'12A', 'E':'12B'
     }
-    return cmap.get(k, k)
+    if k in cmap:
+        return cmap[k]
+    if len(k) == 2 and k[0].isdigit() and k[1].upper() in ['A', 'B']:
+        return '0' + k.upper()
+    return k
   bpm_bin: |
     try:
         b = int(float(bpm)) // 10 * 10
