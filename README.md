@@ -13,16 +13,19 @@ cd ~/.dotfiles
 git-crypt unlock /path/to/key
 
 # Link packages
-stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini
+stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable
 ```
 
 ## Structure
 
 - `aerc/`: TUI email client configuration.
 - `beets/`: Music library management and DJ plugins.
+- `darktable/`: Photography workflow, custom styles, shortcuts, and databases (encrypted).
 - `fish/`: Shell configuration and utility functions.
 - `gemini/`: Gemini / Antigravity CLI configuration, MCP servers, and custom skills.
+- `gh/`: GitHub CLI configuration and credentials (encrypted).
 - `git/`: Git configuration.
+- `kitty/`: Terminal emulator configuration.
 - `nvim/`: Neovim configuration.
 - `spotatui/`: Spotify TUI client configuration.
 - `tmux/`: Terminal multiplexer and plugins.

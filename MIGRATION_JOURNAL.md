@@ -33,7 +33,7 @@ When setting up the new Arch laptop, install these core packages:
 sudo pacman -S git git-crypt stow fish tmux neovim zoxide fzf ripgrep fd yazi
 
 # Terminal & GUI Tools
-sudo pacman -S kitty
+sudo pacman -S kitty github-cli darktable
 
 # X11, Window Manager, & Build Tools (dwm setup on Framework 13)
 sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip picom dmenu
@@ -65,7 +65,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 3. **Stow Desired Packages** (skip macOS-only `raycast`):
    ```bash
-   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty
+   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable
    ```
 
 4. **Initialize Shell & Plugins**:
