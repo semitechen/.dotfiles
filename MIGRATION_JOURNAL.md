@@ -21,7 +21,7 @@ This document tracks all system differences, required configuration tweaks, and 
 | **Darktable Secret Backend** | `apple_keychain` | `auto` (libsecret) | ✅ **Handled**: Changed `pwstorage_backend=auto` in `darktablerc`. |
 | **Tmux Plugins** | TPM manual bootstrap | Auto-bootstrapping script in `tmux.conf` | ✅ **Handled**: Auto-clones and installs plugins on launch. |
 | **Tmux Sessionizer** | `fzf` + `zoxide` popup | `fzf` + `zoxide` popup | ✅ **Handled**: Portable script at `tmux/scripts/sessionizer.sh`. |
-| **Neovim** | `lazy.nvim` with `lazy-lock.json` | `lazy.nvim` with `lazy-lock.json` | ✅ **Handled**: Auto-downloads plugins to `~/.local/share/nvim/lazy/`. Added `<leader>p` / `<leader>P` clipboard paste keymaps. |
+| **Package Management** | Homebrew (`brew`) | `paru` (AUR Helper) with mandatory package reasons | ✅ **Handled**: Custom `paru` wrapper enforces non-empty comments on package install, logging to `packages.txt`. Fish functions, PATH wrappers, and bracketed paste handlers automatically translate `pacman` and `yay` (including `sudo`) to `paru`. |
 | **Gemini / Antigravity** | `settings.json` + `config/` | `settings.json` + `config/` | ✅ **Handled**: Zero local paths in git; symlinked via `stow gemini`. |
 
 ---
@@ -68,7 +68,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 3. **Stow Desired Packages** (skip macOS-only `raycast`):
    ```bash
-   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit
+   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru
    ```
 
 4. **Install System Keyboard Configuration**:
