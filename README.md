@@ -13,7 +13,7 @@ cd ~/.dotfiles
 git-crypt unlock /path/to/key
 
 # Link packages
-stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable
+stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit
 ```
 
 ## Structure
@@ -21,6 +21,7 @@ stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh 
 - `aerc/`: TUI email client configuration.
 - `beets/`: Music library management and DJ plugins.
 - `darktable/`: Photography workflow, custom styles, shortcuts, and databases (encrypted).
+- `dwm/`: suckless dynamic window manager build configuration for Framework 13 Pro.
 - `fish/`: Shell configuration and utility functions.
 - `gemini/`: Gemini / Antigravity CLI configuration, MCP servers, and custom skills.
 - `gh/`: GitHub CLI configuration and credentials (encrypted).
@@ -31,6 +32,8 @@ stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh 
 - `tmux/`: Terminal multiplexer and plugins.
 - `vpn/`: OpenVPN profiles and credentials (encrypted).
 - `wallpapers/`: System backgrounds and new tab pages.
+- `xinit/`: X11 session initialization (`~/.xinitrc`, dual-Alt Polish layout, status loop).
+- `xorg/`: System-wide X11 configuration snippets (`00-keyboard.conf`).
 - `yazi/`: Terminal file manager configuration.
 
 ## Security

@@ -6,27 +6,29 @@ This document tracks all system differences, required configuration tweaks, and 
 
 ## 1. System Differences & Compatibility Tracker
 
-| Category | macOS (Current) | Arch Linux (Target) | Status in Dotfiles |
+| Category | macOS (Previous) | Arch Linux (Target) | Status on `arch` Branch |
 | :--- | :--- | :--- | :--- |
-| **Window Manager** | macOS WindowServer | `dwm` (X11) | ⚠️ **Action Needed**: Set `#define MODKEY Mod4Mask` in `dwm/config.h` (Super/Win key) so `MODKEY+Shift+c` (kill client) does not collide with Polish `Ć`. |
-| **Polish Diacritics (Dual-Alt)** | `kitty.conf` maps `alt+...` via `send_text` | X11 XKB `lv3:alt_switch` | ✅ **Planned**: Use `setxkbmap -layout pl -option lv3:alt_switch` in `~/.xinitrc`. Both Left and Right Alt act as AltGr system-wide (Framework 13 PC layout). Clean macOS-specific Kitty mappings on Linux. |
-| **System Openers** | `/usr/bin/open` | `xdg-open` | ℹ️ **Note**: Standard Linux file/URL opener is `xdg-open`. |
-| **URL Opening in Terminal** | `Shift + Click` (or `Shift + Cmd + Click`) / `Ctrl + Shift + e` (Hints) | `Shift + Click` / `Ctrl + Shift + e` (Hints) | ✅ **Handled**: Kitty built-in URL handling bypasses terminal app mouse grabs (`aerc`, `nvim`). |
-| **Clipboard** | `pbcopy` / `pbpaste` | `xclip` (X11) | ⚠️ **Action Needed**: Replace any custom shell aliases using `pbcopy`. |
-| **Terminal Modifiers** | `cmd+t`, `cmd+w`, `cmd+n` in `kitty.conf` | `alt+...` or `super+...` | ⚠️ **Action Needed**: Update keybindings in `kitty.conf` on Linux. |
-| **macOS Options** | `macos_option_as_alt yes` | Not applicable | ⚠️ **Action Needed**: Clean from `kitty.conf` along with macOS `map alt+...` Polish mappings. |
-| **Launcher** | `raycast/` (macOS-only) | `dmenu` (X11 / dwm) | ℹ️ **Action Needed**: Do not stow `raycast` on Linux; use `dmenu` bundled/configured with dwm. |
-| **Shell Paths** | `fish_variables` has `/opt/homebrew` | Standard `/usr/bin`, `~/.local/bin`, `~/.cargo/bin` | ⚠️ **Action Needed**: Reset `fish_user_paths` (`set -e fish_user_paths`). |
+| **Window Manager** | macOS WindowServer | `dwm` (X11) | ✅ **Handled**: Configured `#define MODKEY Mod4Mask` in `dwm/config.h` (Super/Win key). Eliminates collisions with Polish `Ć` (`Mod1+Shift+c` in default dwm). Added Tokyo Night theme and media/brightness keys. |
+| **Polish Diacritics (Dual-Alt)** | `kitty.conf` maps `alt+...` via `send_text` | X11 XKB `lv3:alt_switch` | ✅ **Handled**: Configured `setxkbmap -layout pl -option lv3:alt_switch` in `xinit/.xinitrc` and persistent `xorg/00-keyboard.conf`. Both Left and Right Alt act as AltGr system-wide (Framework 13 PC layout). Stripped macOS `send_text` overrides from `kitty.conf`. |
+| **System Openers** | `/usr/bin/open` | `xdg-open` | ✅ **Handled**: All scripts (`aerc-print`, Neovim `gx`, fish) use standard portable fallbacks or `xdg-open`. |
+| **URL Opening in Terminal** | `Shift + Click` / `Ctrl + Shift + e` (Hints) | `Shift + Click` / `Ctrl + Shift + e` (Hints) | ✅ **Handled**: Kitty built-in URL handling bypasses terminal app mouse grabs (`aerc`, `nvim`). |
+| **Clipboard** | `pbcopy` / `pbpaste` | `xclip` (X11) | ✅ **Handled**: Neovim uses `"+y` / `"+p` with `xclip`. No macOS clipboard tool invocations remain in dotfiles. |
+| **Terminal Modifiers** | `cmd+t`, `cmd+w`, `cmd+n` in `kitty.conf` | dwm window management / tmux sessions | ✅ **Handled**: Stripped `cmd+` mappings from `kitty.conf`. Terminal splits and windows managed via `tmux` and `dwm`. |
+| **macOS Options** | `macos_option_as_alt yes` | Not applicable (handled by XKB) | ✅ **Handled**: Removed `macos_option_as_alt` from `kitty.conf`. |
+| **Launcher** | `raycast/` (macOS-only) | `dmenu` (X11 / dwm) | ✅ **Handled**: `dmenu_run` configured with Tokyo Night styling on `MODKEY + p`. `raycast/` is excluded from stow on Linux. |
+| **Shell Paths** | `fish_variables` has `/opt/homebrew` | Standard `/usr/bin`, `~/.local/bin`, `~/.cargo/bin` | ✅ **Handled**: Reset `fish_user_paths` to `/home/kacperjelonek/.local/bin` and `/home/kacperjelonek/.cargo/bin`. Updated `config.fish` and `tmux.conf`. |
+| **Paths in Configs & DBs** | `/Users/kacperjelonek` | `/home/kacperjelonek` | ✅ **Handled**: Updated `spotatui/config.yml`, `darktable/darktablerc`, and migrated all paths in SQLite `darktable/library.db`. Removed Colima include in `ssh/config`. |
+| **Darktable Secret Backend** | `apple_keychain` | `auto` (libsecret) | ✅ **Handled**: Changed `pwstorage_backend=auto` in `darktablerc`. |
 | **Tmux Plugins** | TPM manual bootstrap | Auto-bootstrapping script in `tmux.conf` | ✅ **Handled**: Auto-clones and installs plugins on launch. |
 | **Tmux Sessionizer** | `fzf` + `zoxide` popup | `fzf` + `zoxide` popup | ✅ **Handled**: Portable script at `tmux/scripts/sessionizer.sh`. |
-| **Neovim** | `lazy.nvim` with `lazy-lock.json` | `lazy.nvim` with `lazy-lock.json` | ✅ **Handled**: Auto-downloads plugins to `~/.local/share/nvim/lazy/`. |
+| **Neovim** | `lazy.nvim` with `lazy-lock.json` | `lazy.nvim` with `lazy-lock.json` | ✅ **Handled**: Auto-downloads plugins to `~/.local/share/nvim/lazy/`. Added `<leader>p` / `<leader>P` clipboard paste keymaps. |
 | **Gemini / Antigravity** | `settings.json` + `config/` | `settings.json` + `config/` | ✅ **Handled**: Zero local paths in git; symlinked via `stow gemini`. |
 
 ---
 
 ## 2. Arch Linux Package Installation List
 
-When setting up the new Arch laptop, install these core packages:
+When setting up the new Arch laptop (Framework 13 Pro), install these core packages:
 
 ```bash
 # Core CLI Tools, Shell, & Multiplexer
@@ -35,14 +37,14 @@ sudo pacman -S git git-crypt stow fish tmux neovim zoxide fzf ripgrep fd yazi
 # Terminal & GUI Tools
 sudo pacman -S kitty github-cli darktable
 
-# X11, Window Manager, & Build Tools (dwm setup on Framework 13)
-sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip picom dmenu
+# X11, Window Manager, & Utilities (dwm setup on Framework 13)
+sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip picom dmenu feh brightnessctl wireplumber
 
 # Node & Python (Required for Gemini MCP servers & custom skills)
 sudo pacman -S nodejs npm python python-pip
 
 # Audio & Mail Tools
-sudo pacman -S aerc beets w3m openvpn
+sudo pacman -S aerc beets w3m openvpn alsa-utils
 
 # Fonts (Nerd Fonts required for icons in tmux, kitty, & yazi)
 sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
@@ -56,6 +58,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
    ```bash
    git clone <repo_url> ~/.dotfiles
    cd ~/.dotfiles
+   git checkout arch
    ```
 
 2. **Unlock Secrets**:
@@ -65,38 +68,52 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 3. **Stow Desired Packages** (skip macOS-only `raycast`):
    ```bash
-   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable
+   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit
    ```
 
-4. **Initialize Shell & Plugins**:
+4. **Install System Keyboard Configuration**:
+   ```bash
+   sudo cp ~/.dotfiles/xorg/00-keyboard.conf /etc/X11/xorg.conf.d/00-keyboard.conf
+   ```
+
+5. **Build and Install dwm**:
+   ```bash
+   ~/.dotfiles/dwm/install.sh
+   ```
+
+6. **Initialize Shell & Plugins**:
    - **Fish**: Launch `fish` and let `zoxide` initialize.
-   - **Tmux**: Launch `tmux` (TPM will automatically install `tmux-resurrect`, `tmux-continuum`, and `tmux-powerline`).
+   - **Tmux**: Launch `tmux` (TPM will automatically install plugins on first launch).
    - **Neovim**: Open `nvim` (Lazy.nvim will automatically sync all plugins).
    - **Antigravity CLI**: Install `agy` Linux binary and run `agy` once to complete authentication.
 
-5. **Configure X11, dwm & Polish Layout**:
-   - In `dwm/config.h`, ensure `MODKEY` is set to `Mod4Mask`:
-     ```c
-     #define MODKEY Mod4Mask /* Super / Windows key */
-     ```
-   - In `~/.xinitrc`, activate dual-Alt Polish layout and start dwm:
-     ```bash
-     setxkbmap -layout pl -option lv3:alt_switch &
-     exec dwm
-     ```
-   - Clean macOS-only keybindings and `macos_option_as_alt yes` from `~/.config/kitty/kitty.conf`.
+7. **Start X11 & dwm**:
+   ```bash
+   startx
+   ```
 
 ---
 
 ## 4. Post-Migration Notes & Tweaks Log
 
+- **2026-10-12 (Migration to Arch branch completed)**:
+  - Created dedicated `arch` branch with complete Linux & dwm configurations.
+  - Stripped all `/Users/kacperjelonek` and `/opt/homebrew` references across configs (`tmux.conf`, `config.fish`, `fish_variables`, `aerc.conf`, `spotatui/config.yml`, `darktablerc`, `library.db`, `ssh/config`).
+  - Switched Darktable password storage backend from `apple_keychain` to `auto` (`libsecret`).
+  - Updated audio player in Darktable from `afplay` to `aplay`.
+  - Migrated Darktable SQLite `film_rolls.folder` database paths to `/home/kacperjelonek`.
+  - Removed macOS Colima SSH include from `ssh/config`.
+  - Created `xinit/.xinitrc` with dual-Alt Polish layout (`lv3:alt_switch`), wallpaper restoration, compositor (`picom`), status loop, and dwm execution.
+  - Created `dwm/config.h` configured with `MODKEY = Mod4Mask` (Super/Win key), Tokyo Night color scheme, Kitty terminal launcher, dmenu launcher, and hardware multimedia/brightness keybindings for Framework 13 Pro.
+  - Created `dwm/install.sh` automated dwm compilation and installation script.
+  - Created persistent `xorg/00-keyboard.conf` for `/etc/X11/xorg.conf.d/`.
+  - Cleaned `kitty.conf`: stripped deprecated `resize_draw_strategy static`, removed `cmd+` keybindings, removed `macos_option_as_alt yes`, and removed macOS Polish diacritic text-injection workarounds (now natively handled by XKB).
 - **2026-09-22**:
   - Target machine set to Framework 13 Pro (PC layout).
   - Window manager chosen as `dwm` on X11.
   - Resolved Polish diacritics strategy for Linux: use `lv3:alt_switch` in XKB so both Left and Right Alt produce Polish characters (`ą`, `ć`, `ę`, etc.) identically across all apps, matching macOS Option behavior.
   - Documented mandatory `MODKEY = Mod4Mask` setting in `dwm/config.h` to prevent dwm's default kill client shortcut (`Mod1+Shift+c`) from intercepting Polish `Ć`.
-  - Added interim `send_text all` mappings for all Polish diacritics in `kitty.conf` on macOS to enable typing in Antigravity CLI (`agy`), Neovim, and Aerc under `macos_option_as_alt yes`.
 - **2026-08-20**:
   - Replaced submodules with manifest-driven plugin management (`lazy-lock.json` and TPM auto-install).
-  - Added portable `sessionizer.sh` for instant project switching (`fzf` + `zoxide` on `cmd+n` / `prefix+N`).
+  - Added portable `sessionizer.sh` for instant project switching (`fzf` + `zoxide` on `prefix+N`).
   - Stripped local workspace paths from `settings.json` and gitignored `gemini/projects/`.
