@@ -75,8 +75,37 @@ done < "$PACKAGE_FILE"
 echo -e "${GREEN}✓${RESET} Identified ${BOLD}${#packages[@]}${RESET} packages to install."
 
 echo -e "\n${BLUE}::${RESET} ${BOLD}Installing packages via paru (unattended with --needed)...${RESET}"
+set +e
 paru -S --needed --noconfirm "${packages[@]}"
-echo -e "${GREEN}✓ All packages installed successfully.${RESET}\n"
+paru_exit=$?
+set -e
+
+if [ $paru_exit -ne 0 ]; then
+    echo -e "\n${YELLOW}[Notice] Batch installation encountered an issue. Retrying packages individually...${RESET}"
+    failed_pkgs=()
+    for pkg in "${packages[@]}"; do
+        set +e
+        paru -S --needed --noconfirm "$pkg"
+        pkg_exit=$?
+        set -e
+        if [ $pkg_exit -ne 0 ]; then
+            failed_pkgs+=("$pkg")
+        fi
+    done
+
+    if [ ${#failed_pkgs[@]} -gt 0 ]; then
+        echo -e "\n${YELLOW}[Notice] The following package(s) require manual intervention:${RESET}"
+        for f in "${failed_pkgs[@]}"; do
+            echo -e "  - ${BOLD}$f${RESET}"
+            if [ "$f" = "davinci-resolve" ]; then
+                echo -e "    ${YELLOW}↳ Note: DaVinci Resolve requires manually downloading the Linux .zip installer from blackmagicdesign.com/support/ into your build cache before installing.${RESET}"
+            fi
+        done
+        echo -e "You can complete their installation later with: paru -S <package>\n"
+    fi
+else
+    echo -e "${GREEN}✓ All packages installed successfully.${RESET}\n"
+fi
 
 # 3. Create required user directories
 echo -e "${BLUE}::${RESET} ${BOLD}Setting up user directories...${RESET}"
