@@ -37,14 +37,17 @@ sudo pacman -S git git-crypt stow fish tmux neovim zoxide fzf ripgrep fd yazi
 # Terminal & GUI Tools
 sudo pacman -S kitty github-cli darktable
 
-# X11, Window Manager, & Utilities (dwm setup on Framework 13)
-sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip picom rofi dmenu feh brightnessctl wireplumber
+# Framework 13 Hardware Drivers & Firmware (Intel Core Ultra 5 / Meteor Lake)
+sudo pacman -S intel-ucode linux-firmware sof-firmware alsa-ucm-conf mesa vulkan-intel intel-media-driver power-profiles-daemon fwupd
+
+# Audio & PipeWire Stack
+sudo pacman -S pipewire wireplumber pipewire-pulse pipewire-alsa aerc beets w3m openvpn alsa-utils
+
+# X11, Display Scaling, & Utilities
+sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip xorg-xrdb picom rofi dmenu feh brightnessctl
 
 # Node & Python (Required for Gemini MCP servers & custom skills)
 sudo pacman -S nodejs npm python python-pip
-
-# Audio & Mail Tools
-sudo pacman -S aerc beets w3m openvpn alsa-utils
 
 # Fonts (Nerd Fonts required for icons in tmux, kitty, & yazi)
 sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
