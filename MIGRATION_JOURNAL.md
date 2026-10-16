@@ -8,16 +8,16 @@ This document tracks all system differences, required configuration tweaks, and 
 
 | Category | macOS (Previous) | Arch Linux (Target) | Status on `arch` Branch |
 | :--- | :--- | :--- | :--- |
-| **Window Manager** | macOS WindowServer | `dwm` (X11) | ✅ **Handled**: Configured `#define MODKEY Mod4Mask` in `dwm/config.h` (Super/Win key). Eliminates collisions with Polish `Ć` (`Mod1+Shift+c` in default dwm). Added Tokyo Night theme and media/brightness keys. |
+| **Window Manager** | macOS WindowServer | `dwm` (X11) | ✅ **Handled**: Managed in a dedicated separate repository with an ultra-minimal setup (fullscreen apps, no borders, no status bar). |
 | **Polish Diacritics (Dual-Alt)** | `kitty.conf` maps `alt+...` via `send_text` | X11 XKB `lv3:alt_switch` | ✅ **Handled**: Configured `setxkbmap -layout pl -option lv3:alt_switch` in `xinit/.xinitrc` and persistent `xorg/00-keyboard.conf`. Both Left and Right Alt act as AltGr system-wide (Framework 13 PC layout). Stripped macOS `send_text` overrides from `kitty.conf`. |
 | **System Openers** | `/usr/bin/open` | `xdg-open` | ✅ **Handled**: All scripts (`aerc-print`, Neovim `gx`, fish) use standard portable fallbacks or `xdg-open`. |
 | **URL Opening in Terminal** | `Shift + Click` / `Ctrl + Shift + e` (Hints) | `Shift + Click` / `Ctrl + Shift + e` (Hints) | ✅ **Handled**: Kitty built-in URL handling bypasses terminal app mouse grabs (`aerc`, `nvim`). |
 | **Clipboard** | `pbcopy` / `pbpaste` | `xclip` (X11) | ✅ **Handled**: Neovim uses `"+y` / `"+p` with `xclip`. No macOS clipboard tool invocations remain in dotfiles. |
 | **Terminal Modifiers** | `cmd+t`, `cmd+w`, `cmd+n` in `kitty.conf` | dwm window management / tmux sessions | ✅ **Handled**: Stripped `cmd+` mappings from `kitty.conf`. Terminal splits and windows managed via `tmux` and `dwm`. |
 | **macOS Options** | `macos_option_as_alt yes` | Not applicable (handled by XKB) | ✅ **Handled**: Removed `macos_option_as_alt` from `kitty.conf`. |
-| **Launcher** | `raycast/` (macOS-only) | `rofi` (X11 / dwm) | ✅ **Handled**: Replaced Raycast with Rofi styled in Tokyo Night (`rofi/`). Bound to `MODKEY + p` in dwm (with `dmenu` as shift fallback). Deleted `raycast/` on `arch` branch. |
+| **Launcher** | `raycast/` (macOS-only) | `rofi` (X11 / dwm) | ✅ **Handled**: Replaced Raycast with Rofi styled in Tokyo Night (`rofi/`). Deleted `raycast/` on `arch` branch. |
 | **Shell Paths** | `fish_variables` has `/opt/homebrew` | Standard `/usr/bin`, `~/.local/bin`, `~/.cargo/bin` | ✅ **Handled**: Reset `fish_user_paths` to `/home/kacperjelonek/.local/bin` and `/home/kacperjelonek/.cargo/bin`. Updated `config.fish` and `tmux.conf`. |
-| **Paths in Configs & DBs** | `/Users/kacperjelonek` | `/home/kacperjelonek` | ✅ **Handled**: Updated `spotatui/config.yml`, `darktable/darktablerc`, and migrated all paths in SQLite `darktable/library.db`. Removed Colima include in `ssh/config`. |
+| **Paths in Configs & DBs** | `/Users/kacperjelonek` | `/home/kacperjelonek` | ✅ **Handled**: Updated `spotatui/config.yml`, `darktable/darktablerc`. Removed Colima include in `ssh/config`. Untracked dynamic Darktable photo library database (`library.db`) in `.gitignore`. |
 | **Darktable Secret Backend** | `apple_keychain` | `auto` (libsecret) | ✅ **Handled**: Changed `pwstorage_backend=auto` in `darktablerc`. |
 | **Tmux Plugins** | TPM manual bootstrap | Auto-bootstrapping script in `tmux.conf` | ✅ **Handled**: Auto-clones and installs plugins on launch. |
 | **Tmux Sessionizer** | `fzf` + `zoxide` popup | `fzf` + `zoxide` popup | ✅ **Handled**: Portable script at `tmux/scripts/sessionizer.sh`. |
@@ -76,10 +76,8 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
    sudo cp ~/.dotfiles/xorg/00-keyboard.conf /etc/X11/xorg.conf.d/00-keyboard.conf
    ```
 
-5. **Build and Install dwm**:
-   ```bash
-   ~/.dotfiles/dwm/install.sh
-   ```
+5. **Install dwm**:
+   - Clone and compile your minimal dwm build from its dedicated repository.
 
 6. **Initialize Shell & Plugins**:
    - **Fish**: Launch `fish` and let `zoxide` initialize.
@@ -96,6 +94,10 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 ## 4. Post-Migration Notes & Tweaks Log
 
+- **2026-10-16**:
+  - Untracked Darktable's dynamic photo library (`library.db`) in `.gitignore` to prevent git churn every time Darktable is used.
+  - Decoupled `dwm` into a dedicated separate repository for an ultra-minimal setup (fullscreen apps, borderless, no status bar).
+  - Streamlined `xinit/.xinitrc` to a minimal launcher without background status loops.
 - **2026-10-12 (Migration to Arch branch completed)**:
   - Created dedicated `arch` branch with complete Linux & dwm configurations.
   - Stripped all `/Users/kacperjelonek` and `/opt/homebrew` references across configs (`tmux.conf`, `config.fish`, `fish_variables`, `aerc.conf`, `spotatui/config.yml`, `darktablerc`, `library.db`, `ssh/config`).

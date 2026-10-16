@@ -53,6 +53,7 @@ ssh/.ssh/*
 gh/.config/gh/*.log
 
 # darktable
+darktable/.config/darktable/library.db
 darktable/.config/darktable/*.db-snp-*
 darktable/.config/darktable/*.db-pre-*
 darktable/.config/darktable/*.db-journal
