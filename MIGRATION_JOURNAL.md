@@ -69,18 +69,18 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
    git-crypt unlock /path/to/exported-dotfiles.key
    ```
 
-3. **Stow Desired Packages**:
+3. **Run Automated System Kickstart**:
    ```bash
-   stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru rofi
+   ./kickstart.sh
    ```
+   *Installs all 64 packages from `packages.txt` via paru, stows all configurations, applies system Polish dual-Alt layout, enables systemd services (NetworkManager, power-profiles-daemon, fstrim), configures PipeWire audio, and sets fish as default shell.*
 
-4. **Install System Keyboard Configuration**:
-   ```bash
-   sudo cp ~/.dotfiles/xorg/00-keyboard.conf /etc/X11/xorg.conf.d/00-keyboard.conf
-   ```
-
-5. **Install dwm**:
-   - Clone and compile your minimal dwm build from its dedicated repository.
+4. **Install dwm**:
+   - Clone and compile your minimal dwm build from its dedicated repository:
+     ```bash
+     git clone <your-dwm-repo> ~/.local/src/dwm
+     cd ~/.local/src/dwm && sudo make clean install
+     ```
 
 6. **Initialize Shell & Plugins**:
    - **Fish**: Launch `fish` and let `zoxide` initialize.

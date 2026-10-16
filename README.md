@@ -8,12 +8,13 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) and secured via [git
 # Clone dotfiles
 git clone <repo_url> ~/.dotfiles
 cd ~/.dotfiles
+git checkout arch
 
-# Unlock secrets (requires key)
-git-crypt unlock /path/to/key
+# Unlock secrets (requires key exported from previous machine)
+git-crypt unlock /path/to/dotfiles.key
 
-# Link packages
-stow fish nvim tmux git aerc beets spotatui vpn wallpapers yazi gemini kitty gh darktable xinit paru rofi
+# Automated system bootstrap (installs packages, stows configs, enables services)
+./kickstart.sh
 ```
 
 ## Structure
