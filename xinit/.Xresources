@@ -1,0 +1,15 @@
+! ~/.Xresources
+! Framework 13 Display DPI & Cursor Configuration
+!
+! Recommended DPI values for Framework 13 panels:
+!   - 2.8K display (2880x1920, 120Hz): 192 (2.0x scale) or 168 (1.75x) or 144 (1.5x)
+!   - Standard display (2256x1504, 60Hz): 144 (1.5x scale) or 120 (1.25x)
+Xft.dpi: 144
+Xft.antialias: 1
+Xft.hinting: 1
+Xft.hintstyle: hintslight
+Xft.rgba: rgb
+
+! Cursor scaling for HiDPI
+Xcursor.size: 24
+Xcursor.theme: Adwaita

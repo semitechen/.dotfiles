@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# yazi-chooser: bridge script for xdg-desktop-portal-termfilechooser
+# Enables Yazi to act as the system-wide file picker for GUI applications.
+set -euo pipefail
+
+multiple="${1:-0}"
+directory="${2:-0}"
+save="${3:-0}"
+path="${4:-$HOME}"
+out="${5:-}"
+
+if [ -z "$out" ]; then
+    exit 1
+fi
+
+start_dir="$path"
+if [ ! -d "$start_dir" ]; then
+    start_dir="$(dirname "$path" 2>/dev/null || echo "$HOME")"
+fi
+[ -d "$start_dir" ] || start_dir="$HOME"
+
+# Floating kitty window configuration for the file picker dialog
+# Class 'file_chooser' matches DWM floating window rule
+termcmd=(
+    kitty
+    --single-instance
+    --wait-for-single-instance-window-close
+    --class file_chooser
+    --title "Yazi File Chooser"
+    -o remember_window_size=no
+    -o initial_window_width=1100
+    -o initial_window_height=700
+)
+
+# Launch yazi targeting the starting directory and writing selection to $out
+"${termcmd[@]}" yazi "$start_dir" --chooser-file="$out"

@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+#
+# paru wrapper: enforces mandatory non-empty comments explaining why each package is installed,
+# and logs every installed package and comment into packages.txt.
+#
+set -eo pipefail
+
+# Gracefully handle Ctrl-C
+trap 'echo -e "\n\033[1;31m:: Installation cancelled by user.\033[0m" >&2; exit 130' INT
+
+# 1. Locate the real paru or pacman binary (avoiding this script)
+SELF="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+REAL_BIN="${PARU_BINARY:-}"
+
+if [ -z "$REAL_BIN" ]; then
+    for candidate in /usr/bin/paru /usr/local/bin/paru /bin/paru; do
+        if [ -x "$candidate" ]; then
+            cand_real="$(readlink -f "$candidate" 2>/dev/null || realpath "$candidate" 2>/dev/null || echo "$candidate")"
+            if [ "$cand_real" != "$SELF" ]; then
+                REAL_BIN="$candidate"
+                break
+            fi
+        fi
+    done
+fi
+
+if [ -z "$REAL_BIN" ]; then
+    while IFS= read -r candidate; do
+        if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+            cand_real="$(readlink -f "$candidate" 2>/dev/null || realpath "$candidate" 2>/dev/null || echo "$candidate")"
+            if [ "$cand_real" != "$SELF" ]; then
+                REAL_BIN="$candidate"
+                break
+            fi
+        fi
+    done < <(which -a paru 2>/dev/null || true)
+fi
+
+# Fallback to pacman if paru is not yet installed (e.g., initial system bootstrap)
+if [ -z "$REAL_BIN" ]; then
+    for candidate in /usr/bin/pacman /usr/local/bin/pacman /bin/pacman; do
+        if [ -x "$candidate" ]; then
+            cand_real="$(readlink -f "$candidate" 2>/dev/null || realpath "$candidate" 2>/dev/null || echo "$candidate")"
+            if [ "$cand_real" != "$SELF" ]; then
+                REAL_BIN="$candidate"
+                break
+            fi
+        fi
+    done
+fi
+
+if [ -z "$REAL_BIN" ]; then
+    while IFS= read -r candidate; do
+        if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+            cand_real="$(readlink -f "$candidate" 2>/dev/null || realpath "$candidate" 2>/dev/null || echo "$candidate")"
+            if [ "$cand_real" != "$SELF" ]; then
+                REAL_BIN="$candidate"
+                break
+            fi
+        fi
+    done < <(which -a pacman 2>/dev/null || true)
+fi
+
+if [ -z "$REAL_BIN" ]; then
+    echo "Error: Neither 'paru' nor 'pacman' binary was found on this system." >&2
+    exit 1
+fi
+
+# 2. Locate package tracking file
+PACKAGE_FILE="${PARU_PACKAGES_FILE:-}"
+if [ -z "$PACKAGE_FILE" ]; then
+    if [ -f "$HOME/.dotfiles/paru/.config/paru/packages.txt" ]; then
+        PACKAGE_FILE="$HOME/.dotfiles/paru/.config/paru/packages.txt"
+    elif [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/paru/packages.txt" ]; then
+        PACKAGE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/paru/packages.txt"
+    else
+        PACKAGE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/paru/packages.txt"
+    fi
+fi
+
+# Resolve symlink if packages.txt is stowed to dotfiles
+if [ -L "$PACKAGE_FILE" ]; then
+    TARGET_FILE="$(readlink -f "$PACKAGE_FILE" 2>/dev/null || realpath "$PACKAGE_FILE" 2>/dev/null || true)"
+    if [ -n "$TARGET_FILE" ]; then
+        PACKAGE_FILE="$TARGET_FILE"
+    fi
+fi
+
+mkdir -p "$(dirname "$PACKAGE_FILE")" 2>/dev/null || true
+touch "$PACKAGE_FILE" 2>/dev/null || true
+
+# 3. Detect if this is an installation operation and extract target packages
+is_install=0
+is_search_or_info=0
+op=""
+raw_pkgs=()
+skip_next=0
+
+for arg in "$@"; do
+    if [ $skip_next -eq 1 ]; then
+        skip_next=0
+        continue
+    fi
+
+    case "$arg" in
+        --config|--cachedir|--color|--dbpath|--gpgdir|--hookdir|--logfile|--root|--arch)
+            skip_next=1
+            continue
+            ;;
+        -*)
+            if [[ "$arg" =~ ^-[a-zA-Z]*R ]]; then op="R"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*Q ]]; then op="Q"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*F ]]; then op="F"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*D ]]; then op="D"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*S ]]; then op="S"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*U ]]; then op="U"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*P ]]; then op="P"; fi
+            if [[ "$arg" =~ ^-[a-zA-Z]*G ]]; then op="G"; fi
+
+            if [[ "$arg" =~ ^-[a-zA-Z]*[sic] ]]; then is_search_or_info=1; fi
+            if [[ "$arg" == "--search" || "$arg" == "--info" || "$arg" == "--clean" ]]; then is_search_or_info=1; fi
+            ;;
+        *)
+            raw_pkgs+=("$arg")
+            ;;
+    esac
+done
+
+if [[ ("$op" == "S" || "$op" == "U" || "$op" == "") && $is_search_or_info -eq 0 && ${#raw_pkgs[@]} -gt 0 ]]; then
+    is_install=1
+fi
+
+# If not an install operation, execute paru directly
+if [ $is_install -eq 0 ]; then
+    exec "$REAL_BIN" "$@"
+fi
+
+# 4. Mandatory comment prompt for each target package
+declare -A new_comments
+
+for pkg in "${raw_pkgs[@]}"; do
+    # Strip repository prefix or file path (e.g. aur/songrec -> songrec, extra/git -> git)
+    pkg_name="$(basename "$pkg")"
+    pkg_name="${pkg_name##*/}"
+    # Strip extension if local package (.pkg.tar.zst)
+    pkg_name="${pkg_name%%-[0-9]*.pkg.tar.*}"
+
+    # Check if already documented in packages.txt
+    existing="$(grep -E "^[[:space:]]*${pkg_name}[[:space:]]+" "$PACKAGE_FILE" 2>/dev/null | head -n 1 || true)"
+    if [ -n "$existing" ]; then
+        echo -e "\033[1;34m::\033[0m Package '\033[1;32m$pkg_name\033[0m' already tracked: $existing"
+        continue
+    fi
+
+    # Open prompt file descriptors: /dev/tty when interactive, stdin/stderr when redirected
+    if [ -t 0 ]; then
+        exec 3< /dev/tty 2>/dev/null || exec 3<&0
+        exec 4> /dev/tty 2>/dev/null || exec 4>&2
+    else
+        exec 3<&0
+        exec 4>&2
+    fi
+
+    # Mandatory comment loop - cannot be empty, cannot be skipped
+    while true; do
+        echo -ne "\033[1;35m::\033[0m \033[1mWhy are you installing '\033[1;32m$pkg_name\033[0m\033[1m'? (mandatory reason):\033[0m " >&4
+        if ! IFS= read -r comment <&3; then
+            echo "" >&4
+            echo -e "\033[1;31m[Error]\033[0m Input interrupted. Installation aborted." >&2
+            exit 1
+        fi
+
+        # Trim leading and trailing whitespace
+        comment="$(echo "$comment" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+        # Check for empty input
+        if [ -z "$comment" ]; then
+            echo -e "\033[1;31m[Error]\033[0m A comment is strictly required to install '$pkg_name'. It cannot be empty." >&4
+            continue
+        fi
+
+        # Normalize any surrounding quotes
+        comment="$(echo "$comment" | sed -e 's/^["“”]//' -e 's/["“”]$//')"
+        new_comments["$pkg_name"]="$comment"
+        break
+    done
+done
+
+# 5. Execute real paru / pacman
+# Automatically append --noconfirm to bypass all installation prompts (unless --confirm was explicitly specified)
+exec_args=("$@")
+has_noconfirm=0
+has_confirm=0
+
+for a in "${exec_args[@]}"; do
+    if [ "$a" == "--noconfirm" ]; then has_noconfirm=1; fi
+    if [ "$a" == "--confirm" ]; then has_confirm=1; fi
+done
+
+if [ $has_noconfirm -eq 0 ] && [ $has_confirm -eq 0 ]; then
+    exec_args+=("--noconfirm")
+fi
+
+set +e
+"$REAL_BIN" "${exec_args[@]}"
+paru_status=$?
+set -e
+
+# 6. If installation succeeded, write comments to packages.txt
+if [ $paru_status -eq 0 ]; then
+    if [ ${#new_comments[@]} -gt 0 ]; then
+        temp_file="$(mktemp "${TMPDIR:-/tmp}/packages.XXXXXX")"
+        cp "$PACKAGE_FILE" "$temp_file"
+
+        for p in "${!new_comments[@]}"; do
+            c="${new_comments[$p]}"
+            if grep -q -E "^[[:space:]]*${p}[[:space:]]+" "$temp_file" 2>/dev/null; then
+                # Update existing entry
+                awk -v pkg="$p" -v comm="$c" '
+                    $1 == pkg { print pkg " \"" comm "\""; next }
+                    { print }
+                ' "$temp_file" > "${temp_file}.new" && mv "${temp_file}.new" "$temp_file"
+            else
+                # Append new entry
+                echo "${p} \"${c}\"" >> "$temp_file"
+            fi
+            echo -e "\033[1;32m::\033[0m Recorded: \033[1m${p}\033[0m \"${c}\""
+        done
+
+        mv -f "$temp_file" "$PACKAGE_FILE"
+    fi
+else
+    echo -e "\033[1;33m::\033[0m Installation did not succeed (exit code $paru_status). No comments recorded." >&2
+fi
+
+exit $paru_status

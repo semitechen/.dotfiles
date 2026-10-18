@@ -141,7 +141,11 @@ return {
 					vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = yazi_buffer_id })
 
 					vim.keymap.set("n", "<leader>d", function()
-						vim.notify("ripdrag is intended for Linux; current platform is MacOS", vim.log.levels.WARN)
+						if vim.fn.has("mac") == 1 then
+							vim.notify("ripdrag is intended for Linux; current platform is MacOS", vim.log.levels.WARN)
+						else
+							vim.notify("Drag and drop: run ripdrag <file> in terminal", vim.log.levels.INFO)
+						end
 					end, { buffer = yazi_buffer_id, desc = "Drag file" })
 				end,
 				yazi_closed_successfully = function(chosen_file, _, _)
