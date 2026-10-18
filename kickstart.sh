@@ -155,6 +155,7 @@ echo -e "${GREEN}✓ Dotfiles stowed.${RESET}\n"
 # 5. Ensure scripts are executable
 chmod +x "$DOTFILES_DIR/xinit/.xinitrc" "$HOME/.xinitrc" 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/paru/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
+chmod +x "$DOTFILES_DIR/yazi/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 
 # 6. Apply system-wide X11 keyboard configuration (Polish dual-Alt)
 if [ -f "$DOTFILES_DIR/xorg/00-keyboard.conf" ]; then
@@ -191,7 +192,17 @@ echo -e "${GREEN}✓ Enabled PipeWire and WirePlumber audio stack.${RESET}"
 
 # User-level automatic Downloads cleanup (> 30 days) via systemd-tmpfiles
 systemctl --user enable --now systemd-tmpfiles-clean.timer 2>/dev/null || true
-echo -e "${GREEN}✓ Enabled systemd-tmpfiles-clean.timer for automatic 30-day Downloads cleanup.${RESET}\n"
+echo -e "${GREEN}✓ Enabled systemd-tmpfiles-clean.timer for automatic 30-day Downloads cleanup.${RESET}"
+
+# User-level XDG Desktop Portal for Yazi file chooser
+systemctl --user enable --now xdg-desktop-portal 2>/dev/null || true
+echo -e "${GREEN}✓ Enabled xdg-desktop-portal service for Yazi file chooser.${RESET}"
+
+# Register Yazi as the default system-wide directory handler
+if command -v xdg-mime >/dev/null 2>&1; then
+    xdg-mime default yazi.desktop inode/directory
+    echo -e "${GREEN}✓ Registered Yazi as default handler for inode/directory.${RESET}\n"
+fi
 
 # 8. Set Default User Shell to Fish
 if command -v fish >/dev/null 2>&1; then
