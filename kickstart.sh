@@ -107,7 +107,47 @@ else
     echo -e "${GREEN}✓ All packages installed successfully.${RESET}\n"
 fi
 
-# 3. Create required user directories
+# 3. Purge unneeded default packages, legacy drivers, and orphans
+echo -e "${BLUE}::${RESET} ${BOLD}Auditing and removing unneeded default packages...${RESET}"
+BLOAT_PACKAGES=(
+    nano                  # Replaced by neovim
+    vi                    # Replaced by neovim
+    dmenu                 # Replaced by rofi
+    xterm                 # Replaced by kitty
+    xf86-video-intel      # Harmful on Meteor Lake Arc GPU (modesetting driver is superior)
+    xf86-video-vesa       # Unneeded legacy fallback driver
+    dhcpcd                # Conflicts with NetworkManager
+    netctl                # Legacy network configuration
+    thunar                # Yazi is exclusive file manager
+    nautilus              # Yazi is exclusive file manager
+    dolphin               # Yazi is exclusive file manager
+    pcmanfm               # Yazi is exclusive file manager
+)
+
+to_remove=()
+for pkg in "${BLOAT_PACKAGES[@]}"; do
+    if pacman -Qq "$pkg" >/dev/null 2>&1; then
+        to_remove+=("$pkg")
+    fi
+done
+
+if [ ${#to_remove[@]} -gt 0 ]; then
+    echo -e "Removing unneeded packages: ${BOLD}${to_remove[*]}${RESET}..."
+    sudo pacman -Rns --noconfirm "${to_remove[@]}" 2>/dev/null || true
+    echo -e "${GREEN}✓ Removed unneeded packages.${RESET}\n"
+else
+    echo -e "${GREEN}✓ No unneeded packages found.${RESET}\n"
+fi
+
+# Clean up any leftover orphaned packages (dependencies no longer required)
+orphans=$(pacman -Qtdq 2>/dev/null || true)
+if [ -n "$orphans" ]; then
+    echo -e "Cleaning orphaned dependencies..."
+    sudo pacman -Rns --noconfirm $orphans 2>/dev/null || true
+    echo -e "${GREEN}✓ Cleaned orphan packages.${RESET}\n"
+fi
+
+# 4. Create required user directories
 echo -e "${BLUE}::${RESET} ${BOLD}Setting up user directories...${RESET}"
 mkdir -p \
     "$HOME/.config" \
@@ -120,7 +160,7 @@ mkdir -p \
     "$HOME/Downloads" \
     "$HOME/Documents"
 
-# 4. Stow dotfiles packages
+# 5. Stow dotfiles packages
 echo -e "${BLUE}::${RESET} ${BOLD}Stowing dotfiles configurations...${RESET}"
 cd "$DOTFILES_DIR"
 
@@ -152,12 +192,12 @@ for pkg in "${STOW_PACKAGES[@]}"; do
 done
 echo -e "${GREEN}✓ Dotfiles stowed.${RESET}\n"
 
-# 5. Ensure scripts are executable
+# 6. Ensure scripts are executable
 chmod +x "$DOTFILES_DIR/xinit/.xinitrc" "$HOME/.xinitrc" 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/paru/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/yazi/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 
-# 6. Apply system-wide X11 keyboard configuration (Polish dual-Alt)
+# 7. Apply system-wide X11 keyboard configuration (Polish dual-Alt)
 if [ -f "$DOTFILES_DIR/xorg/00-keyboard.conf" ]; then
     echo -e "${BLUE}::${RESET} ${BOLD}Installing system-wide Polish dual-Alt XKB configuration...${RESET}"
     sudo mkdir -p /etc/X11/xorg.conf.d
@@ -165,7 +205,7 @@ if [ -f "$DOTFILES_DIR/xorg/00-keyboard.conf" ]; then
     echo -e "${GREEN}✓ Installed /etc/X11/xorg.conf.d/00-keyboard.conf.${RESET}\n"
 fi
 
-# 7. Configure & Enable Systemd Services
+# 8. Configure & Enable Systemd Services
 echo -e "${BLUE}::${RESET} ${BOLD}Configuring system services for Framework 13 Pro...${RESET}"
 
 # NetworkManager
@@ -204,7 +244,7 @@ if command -v xdg-mime >/dev/null 2>&1; then
     echo -e "${GREEN}✓ Registered Yazi as default handler for inode/directory.${RESET}\n"
 fi
 
-# 8. Set Default User Shell to Fish
+# 9. Set Default User Shell to Fish
 if command -v fish >/dev/null 2>&1; then
     FISH_BIN="$(which fish)"
     CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
@@ -218,7 +258,7 @@ if command -v fish >/dev/null 2>&1; then
     fi
 fi
 
-# 9. Clone, build, and install dwm
+# 10. Clone, build, and install dwm
 echo -e "${BLUE}::${RESET} ${BOLD}Installing suckless dwm window manager...${RESET}"
 DWM_DIR="$HOME/.local/src/dwm"
 if [ ! -d "$DWM_DIR" ]; then
@@ -233,7 +273,7 @@ echo "Compiling and installing dwm..."
 (cd "$DWM_DIR" && sudo make clean install)
 echo -e "${GREEN}✓ dwm installed to /usr/local/bin/dwm.${RESET}\n"
 
-# 10. Next Steps Summary
+# 11. Next Steps Summary
 echo -e "${BOLD}${GREEN}=====================================================${RESET}"
 echo -e "${BOLD}${GREEN}  Kickstart Complete! System is Fully Configured.    ${RESET}"
 echo -e "${BOLD}${GREEN}=====================================================${RESET}\n"
