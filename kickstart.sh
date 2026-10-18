@@ -202,14 +202,25 @@ if command -v fish >/dev/null 2>&1; then
     fi
 fi
 
-# 9. Next Steps Summary
+# 9. Clone, build, and install dwm
+echo -e "${BLUE}::${RESET} ${BOLD}Installing suckless dwm window manager...${RESET}"
+DWM_DIR="$HOME/.local/src/dwm"
+if [ ! -d "$DWM_DIR" ]; then
+    echo "Cloning dwm repository..."
+    git clone https://github.com/semitechen/dwm.git "$DWM_DIR"
+else
+    echo "Updating dwm repository..."
+    (cd "$DWM_DIR" && git pull --ff-only 2>/dev/null || true)
+fi
+
+echo "Compiling and installing dwm..."
+(cd "$DWM_DIR" && sudo make clean install)
+echo -e "${GREEN}✓ dwm installed to /usr/local/bin/dwm.${RESET}\n"
+
+# 10. Next Steps Summary
 echo -e "${BOLD}${GREEN}=====================================================${RESET}"
-echo -e "${BOLD}${GREEN}  Kickstart Complete! System is Configured.          ${RESET}"
+echo -e "${BOLD}${GREEN}  Kickstart Complete! System is Fully Configured.    ${RESET}"
 echo -e "${BOLD}${GREEN}=====================================================${RESET}\n"
 
-echo -e "Next steps to launch your minimal dwm desktop:\n"
-echo -e "  1. Clone and compile your minimal dwm repository:"
-echo -e "     ${BOLD}git clone <your-dwm-repo> ~/.local/src/dwm${RESET}"
-echo -e "     ${BOLD}cd ~/.local/src/dwm && sudo make clean install${RESET}\n"
-echo -e "  2. Start X11 session:"
+echo -e "You can now launch your minimal dwm desktop with:\n"
 echo -e "     ${BOLD}startx${RESET}\n"
