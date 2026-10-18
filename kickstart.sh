@@ -142,6 +142,7 @@ STOW_PACKAGES=(
     xinit
     paru
     rofi
+    systemd
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -186,7 +187,11 @@ fi
 
 # User-level PipeWire audio services
 systemctl --user enable --now pipewire pipewire-pulse wireplumber 2>/dev/null || true
-echo -e "${GREEN}✓ Enabled PipeWire and WirePlumber audio stack.${RESET}\n"
+echo -e "${GREEN}✓ Enabled PipeWire and WirePlumber audio stack.${RESET}"
+
+# User-level automatic Downloads cleanup (> 30 days) via systemd-tmpfiles
+systemctl --user enable --now systemd-tmpfiles-clean.timer 2>/dev/null || true
+echo -e "${GREEN}✓ Enabled systemd-tmpfiles-clean.timer for automatic 30-day Downloads cleanup.${RESET}\n"
 
 # 8. Set Default User Shell to Fish
 if command -v fish >/dev/null 2>&1; then

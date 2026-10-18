@@ -97,6 +97,10 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 ## 4. Post-Migration Notes & Tweaks Log
 
+- **2026-10-18**:
+  - Configured `dwm` with borderless (`borderpx = 0`), no bar (`showbar = 0`), monocle default layout, and dedicated app tag navigation shortcuts (`Super+d` for tmux, `Super+a` for aerc, `Super+s` for spotatui, `Super+z` for iamb, `Super+x` for helium, `Super+q` for kicad, `Super+Space` for rofi, `Super+Enter` for kitty).
+  - Implemented RAM-optimized TUI startup: all TUI apps launch under a single `kitty --single-instance` master daemon, sharing GPU sprite cache, OpenGL contexts, and engine to cut RAM from ~400MB to ~80MB total. Windows are routed to tags using `--class` matching.
+  - Implemented automated 30-day cleanup of `~/Downloads`: configured `systemd/.config/user-tmpfiles.d/downloads.conf` with `d %h/Downloads 0755 - - 30d -` and enabled `systemd-tmpfiles-clean.timer` in user systemd. Added helper function `clean_downloads` in fish.
 - **2026-10-16**:
   - Untracked Darktable's dynamic photo library (`library.db`) in `.gitignore` to prevent git churn every time Darktable is used.
   - Decoupled `dwm` into a dedicated separate repository for an ultra-minimal setup (fullscreen apps, borderless, no status bar).
