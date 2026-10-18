@@ -227,6 +227,38 @@ if systemctl list-unit-files fstrim.timer >/dev/null 2>&1; then
     echo -e "${GREEN}✓ Enabled fstrim.timer for Lexar NM790 SSD.${RESET}"
 fi
 
+# Configure zram-generator (compressed in-RAM swap, zero SSD wear for 32GB RAM)
+if [ ! -f /etc/systemd/zram-generator.conf ]; then
+    echo -e "${BLUE}::${RESET} ${BOLD}Configuring zram compressed swap device...${RESET}"
+    sudo tee /etc/systemd/zram-generator.conf >/dev/null << 'EOF'
+[zram0]
+zram-size = ram / 2
+compression-algorithm = zstd
+swap-priority = 100
+EOF
+    sudo systemctl daemon-reload
+    sudo systemctl start systemd-zram-setup@zram0 2>/dev/null || true
+    echo -e "${GREEN}✓ Configured 16GB zstd compressed zram swap device.${RESET}"
+fi
+
+# Set optimal kernel swappiness for zram
+if [ ! -f /etc/sysctl.d/99-swappiness.conf ]; then
+    sudo tee /etc/sysctl.d/99-swappiness.conf >/dev/null << 'EOF'
+vm.swappiness = 60
+vm.watermark_boost_factor = 0
+vm.watermark_scale_factor = 125
+vm.page-cluster = 0
+EOF
+    sudo sysctl --system >/dev/null 2>&1 || true
+    echo -e "${GREEN}✓ Applied optimal sysctl swappiness for zram.${RESET}"
+fi
+
+# Btrfs monthly scrub timer to verify checksums and integrity on Lexar SSD
+if systemctl list-unit-files btrfs-scrub@.timer >/dev/null 2>&1; then
+    sudo systemctl enable --now btrfs-scrub@-.timer 2>/dev/null || true
+    echo -e "${GREEN}✓ Enabled periodic btrfs scrub timer for filesystem integrity.${RESET}"
+fi
+
 # User-level PipeWire audio services
 systemctl --user enable --now pipewire pipewire-pulse wireplumber 2>/dev/null || true
 echo -e "${GREEN}✓ Enabled PipeWire and WirePlumber audio stack.${RESET}"
