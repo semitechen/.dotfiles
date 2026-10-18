@@ -103,6 +103,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
   - Implemented automated 30-day cleanup of `~/Downloads`: configured `systemd/.config/user-tmpfiles.d/downloads.conf` with `d %h/Downloads 0755 - - 30d -` and enabled `systemd-tmpfiles-clean.timer` in user systemd. Added helper function `clean_downloads` in fish.
   - Configured Yazi as the exclusive system-wide file explorer: registered as default `inode/directory` handler in `mimeapps.list` and `yazi.desktop`. Integrated `xdg-desktop-portal-termfilechooser` with `yazi-chooser` so all GUI apps (Helium, KiCad, FreeCAD) open floating Yazi dialogs for Open/Save file actions without any GUI file managers installed.
   - Added automated bloat & orphan purging in `kickstart.sh`: removes redundant default editors (`nano`, `vi`), superseded tools (`dmenu`, `xterm`), conflicting network daemons (`dhcpcd`, `netctl`), GUI file managers (`thunar`, `nautilus`, `dolphin`, `pcmanfm`), legacy buggy GPU drivers (`xf86-video-intel`, `xf86-video-vesa`), and orphaned packages.
+  - Configured `fastfetch` as the interactive Fish greeting: displays official Arch Linux ASCII logo and hardware/OS specs styled in Tokyo Night color palette. Added `fastfetch` stow package and added to `packages.txt`.
 - **2026-10-16**:
   - Untracked Darktable's dynamic photo library (`library.db`) in `.gitignore` to prevent git churn every time Darktable is used.
   - Decoupled `dwm` into a dedicated separate repository for an ultra-minimal setup (fullscreen apps, borderless, no status bar).

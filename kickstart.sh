@@ -183,6 +183,7 @@ STOW_PACKAGES=(
     paru
     rofi
     systemd
+    fastfetch
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
