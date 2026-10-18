@@ -227,6 +227,12 @@ if systemctl list-unit-files fstrim.timer >/dev/null 2>&1; then
     echo -e "${GREEN}✓ Enabled fstrim.timer for Lexar NM790 SSD.${RESET}"
 fi
 
+# Automatic systemd-boot EFI bootloader updates
+if systemctl list-unit-files systemd-boot-update.service >/dev/null 2>&1; then
+    sudo systemctl enable systemd-boot-update.service
+    echo -e "${GREEN}✓ Enabled systemd-boot-update.service for automatic bootloader updates.${RESET}"
+fi
+
 # Configure zram-generator (compressed in-RAM swap, zero SSD wear for 32GB RAM)
 if [ ! -f /etc/systemd/zram-generator.conf ]; then
     echo -e "${BLUE}::${RESET} ${BOLD}Configuring zram compressed swap device...${RESET}"
