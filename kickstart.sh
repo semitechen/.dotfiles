@@ -35,6 +35,13 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 
+# Authenticate sudo upfront and keep session alive during unattended package installs
+echo -e "${BLUE}::${RESET} ${BOLD}Authenticating sudo for system setup...${RESET}"
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+SUDO_PID=$!
+trap 'kill $SUDO_PID 2>/dev/null || true' EXIT
+
 if ! command -v paru >/dev/null 2>&1; then
     echo -e "${YELLOW}[Warning] 'paru' was not found in PATH.${RESET}"
     echo -e "Ensuring base-devel and git are installed before building paru..."
