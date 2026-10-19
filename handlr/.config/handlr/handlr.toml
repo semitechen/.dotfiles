@@ -1,0 +1,12 @@
+# handlr configuration
+# Modern, blazing-fast replacement for xdg-open and xdg-mime
+
+# Prompt with Rofi if multiple handlers exist
+enable_selector = true
+selector = "rofi -dmenu -i -p 'Open with:'"
+
+# Custom regex rules
+[[handlers]]
+exec = "mpv %u"
+terminal = false
+regexes = ['(https?://)?(www\.)?(youtube\.com/watch\?v=|youtu\.be/).*']

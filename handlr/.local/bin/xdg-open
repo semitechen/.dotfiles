@@ -1,0 +1,3 @@
+#!/bin/sh
+# xdg-open wrapper shadowing system xdg-open with handlr
+exec handlr open "$@"

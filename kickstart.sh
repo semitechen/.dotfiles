@@ -184,6 +184,7 @@ STOW_PACKAGES=(
     rofi
     systemd
     fastfetch
+    handlr
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -197,6 +198,7 @@ echo -e "${GREEN}✓ Dotfiles stowed.${RESET}\n"
 chmod +x "$DOTFILES_DIR/xinit/.xinitrc" "$HOME/.xinitrc" 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/paru/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/yazi/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
+chmod +x "$DOTFILES_DIR/handlr/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 
 # 7. Apply system-wide X11 keyboard configuration (Polish dual-Alt)
 if [ -f "$DOTFILES_DIR/xorg/00-keyboard.conf" ]; then
@@ -277,10 +279,27 @@ echo -e "${GREEN}✓ Enabled systemd-tmpfiles-clean.timer for automatic 30-day D
 systemctl --user enable --now xdg-desktop-portal 2>/dev/null || true
 echo -e "${GREEN}✓ Enabled xdg-desktop-portal service for Yazi file chooser.${RESET}"
 
-# Register Yazi as the default system-wide directory handler
-if command -v xdg-mime >/dev/null 2>&1; then
+# Register default application associations via handlr & xdg-mime
+if command -v handlr >/dev/null 2>&1; then
+    handlr set inode/directory yazi.desktop
+    handlr set x-scheme-handler/http helium-browser.desktop
+    handlr set x-scheme-handler/https helium-browser.desktop
+    echo -e "${GREEN}✓ Registered default associations via handlr.${RESET}"
+elif command -v xdg-mime >/dev/null 2>&1; then
     xdg-mime default yazi.desktop inode/directory
-    echo -e "${GREEN}✓ Registered Yazi as default handler for inode/directory.${RESET}\n"
+    echo -e "${GREEN}✓ Registered Yazi as default handler for inode/directory.${RESET}"
+fi
+
+# Shadow xdg-open system-wide with handlr (/usr/local/bin/xdg-open)
+if command -v handlr >/dev/null 2>&1; then
+    sudo tee /usr/local/bin/xdg-open >/dev/null << 'EOF'
+#!/bin/sh
+exec handlr open "$@"
+EOF
+    sudo chmod +x /usr/local/bin/xdg-open
+    echo -e "${GREEN}✓ Shadowed xdg-open with handlr system-wide (/usr/local/bin/xdg-open).${RESET}\n"
+else
+    echo ""
 fi
 
 # 9. Set Default User Shell to Fish

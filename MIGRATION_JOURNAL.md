@@ -10,7 +10,7 @@ This document tracks all system differences, required configuration tweaks, and 
 | :--- | :--- | :--- | :--- |
 | **Window Manager** | macOS WindowServer | `dwm` (X11) | ✅ **Handled**: Managed in a dedicated separate repository with an ultra-minimal setup (fullscreen apps, no borders, no status bar). |
 | **Polish Diacritics (Dual-Alt)** | `kitty.conf` maps `alt+...` via `send_text` | X11 XKB `lv3:alt_switch` | ✅ **Handled**: Configured `setxkbmap -layout pl -option lv3:alt_switch` in `xinit/.xinitrc` and persistent `xorg/00-keyboard.conf`. Both Left and Right Alt act as AltGr system-wide (Framework 13 PC layout). Stripped macOS `send_text` overrides from `kitty.conf`. |
-| **System Openers** | `/usr/bin/open` | `xdg-open` | ✅ **Handled**: All scripts (`aerc-print`, Neovim `gx`, fish) use standard portable fallbacks or `xdg-open`. |
+| **System Openers** | `/usr/bin/open` | `handlr` (`xdg-open` shadow) | ✅ **Handled**: Completely replaced `xdg-open` and `xdg-mime` with `handlr` (`handlr-regex`). Shadowed via `~/.local/bin/xdg-open`, `~/.local/bin/xdg-mime`, and `/usr/local/bin/xdg-open`. Configured Rofi selector and YouTube/mpv regex handling in `handlr.toml`. |
 | **URL Opening in Terminal** | `Shift + Click` / `Ctrl + Shift + e` (Hints) | `Shift + Click` / `Ctrl + Shift + e` (Hints) | ✅ **Handled**: Kitty built-in URL handling bypasses terminal app mouse grabs (`aerc`, `nvim`). |
 | **Clipboard** | `pbcopy` / `pbpaste` | `xclip` (X11) | ✅ **Handled**: Neovim uses `"+y` / `"+p` with `xclip`. No macOS clipboard tool invocations remain in dotfiles. |
 | **Terminal Modifiers** | `cmd+t`, `cmd+w`, `cmd+n` in `kitty.conf` | dwm window management / tmux sessions | ✅ **Handled**: Stripped `cmd+` mappings from `kitty.conf`. Terminal splits and windows managed via `tmux` and `dwm`. |
@@ -97,6 +97,12 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 ## 4. Post-Migration Notes & Tweaks Log
 
+- **2026-10-19**:
+  - Fully replaced `xdg-open` and `xdg-mime` with `handlr` (`handlr-regex`):
+    - Added `handlr-regex` to `paru/.config/paru/packages.txt`.
+    - Created `handlr` stow package with `~/.config/handlr/handlr.toml` enabling Rofi menu selector (`rofi -dmenu -i -p 'Open with:'`) when multiple handlers exist, and regex handler routing YouTube URLs directly to `mpv`.
+    - Created executable wrappers `~/.local/bin/xdg-open` and `~/.local/bin/xdg-mime` (shadowing `xdg-utils` commands via user PATH precedence) mapping `xdg-open "$@"` to `handlr open "$@"` and translating `xdg-mime` subcommands (`default`, `query`) to `handlr set` and `handlr get`.
+    - Automated system-wide shadow wrapper `/usr/local/bin/xdg-open` and default file/protocol association registration (`inode/directory` -> `yazi.desktop`, `http[s]` -> `helium-browser.desktop`) in `kickstart.sh`.
 - **2026-10-18**:
   - Configured `dwm` with borderless (`borderpx = 0`), no bar (`showbar = 0`), monocle default layout, and dedicated app tag navigation shortcuts (`Super+d` for tmux, `Super+a` for aerc, `Super+s` for spotatui, `Super+z` for iamb, `Super+x` for helium, `Super+q` for kicad, `Super+Space` for rofi, `Super+Enter` for kitty). Added `Super+e` shortcut to launch Yazi and added floating window rule for `file_chooser`.
   - Implemented RAM-optimized TUI startup: all TUI apps launch under a single `kitty --single-instance` master daemon, sharing GPU sprite cache, OpenGL contexts, and engine to cut RAM from ~400MB to ~80MB total. Windows are routed to tags using `--class` matching.

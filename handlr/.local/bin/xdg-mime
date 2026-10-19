@@ -1,0 +1,21 @@
+#!/bin/sh
+# xdg-mime wrapper shadowing system xdg-mime with handlr
+case "$1" in
+    default)
+        # xdg-mime default <application.desktop> <mimetype>
+        exec handlr set "$3" "$2"
+        ;;
+    query)
+        # xdg-mime query default <mimetype>
+        if [ "$2" = "default" ]; then
+            exec handlr get "$3"
+        elif [ "$2" = "filetype" ]; then
+            exec handlr get --mimetype "$3"
+        else
+            exec handlr get "$@"
+        fi
+        ;;
+    *)
+        exec handlr "$@"
+        ;;
+esac
