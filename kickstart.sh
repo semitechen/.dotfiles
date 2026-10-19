@@ -37,6 +37,8 @@ fi
 
 if ! command -v paru >/dev/null 2>&1; then
     echo -e "${YELLOW}[Warning] 'paru' was not found in PATH.${RESET}"
+    echo -e "Ensuring base-devel and git are installed before building paru..."
+    sudo pacman -S --needed --noconfirm base-devel git
     echo -e "Attempting to bootstrap paru-bin from AUR..."
     BOOTSTRAP_DIR="$(mktemp -d)"
     git clone https://aur.archlinux.org/paru-bin.git "$BOOTSTRAP_DIR"
@@ -154,11 +156,13 @@ mkdir -p \
     "$HOME/.local/bin" \
     "$HOME/.local/share" \
     "$HOME/.local/src" \
+    "$HOME/.ssh" \
     "$HOME/Music/dj/music" \
     "$HOME/Music/dj/playlists" \
     "$HOME/Pictures/Darktable" \
     "$HOME/Downloads" \
     "$HOME/Documents"
+chmod 700 "$HOME/.ssh" 2>/dev/null || true
 
 # 5. Stow dotfiles packages
 echo -e "${BLUE}::${RESET} ${BOLD}Stowing dotfiles configurations...${RESET}"
@@ -172,6 +176,8 @@ STOW_PACKAGES=(
     aerc
     beets
     spotatui
+    iamb
+    ssh
     vpn
     wallpapers
     yazi
@@ -194,11 +200,16 @@ for pkg in "${STOW_PACKAGES[@]}"; do
 done
 echo -e "${GREEN}✓ Dotfiles stowed.${RESET}\n"
 
-# 6. Ensure scripts are executable
+# 6. Ensure correct permissions for scripts and security keys
 chmod +x "$DOTFILES_DIR/xinit/.xinitrc" "$HOME/.xinitrc" 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/paru/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/yazi/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/handlr/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
+chmod +x "$DOTFILES_DIR/tmux/.config/tmux/scripts/sessionizer.sh" 2>/dev/null || true
+chmod +x "$DOTFILES_DIR/aerc/.config/aerc/filters/"* 2>/dev/null || true
+chmod +x "$DOTFILES_DIR/beets/.config/beets/essentia_extractor" 2>/dev/null || true
+chmod 600 "$DOTFILES_DIR/ssh/.ssh/config" "$HOME/.ssh/config" 2>/dev/null || true
+chmod 600 "$DOTFILES_DIR/vpn/.vpn"/*/* 2>/dev/null || true
 
 # 7. Apply system-wide X11 input configurations (Polish dual-Alt keyboard & Touchpad)
 if [ -d "$DOTFILES_DIR/xorg" ]; then
@@ -309,7 +320,7 @@ fi
 
 # 9. Set Default User Shell to Fish
 if command -v fish >/dev/null 2>&1; then
-    FISH_BIN="$(which fish)"
+    FISH_BIN="$(command -v fish)"
     CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
     if [ "$CURRENT_SHELL" != "$FISH_BIN" ]; then
         echo -e "${BLUE}::${RESET} ${BOLD}Changing default shell to fish ($FISH_BIN)...${RESET}"

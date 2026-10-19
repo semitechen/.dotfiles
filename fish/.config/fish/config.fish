@@ -5,7 +5,7 @@ if status is-interactive
 	# Automatically translate pacman/yay commands to paru before execution
 	function __auto_translate_pacman_yay
 		set -l cmd (commandline)
-		set -l translated (string replace -ra '([;\|\&]+\s*|^)(sudo\s+)?(pacman|yay)\b' '$1paru' -- "$cmd")
+		set -l translated (string replace -ra '([;\|\&]+\s*|^)(sudo\s+)?(pacman|yay|paru)\b' '$1paru' -- "$cmd")
 		if test "$cmd" != "$translated"
 			commandline -r -- "$translated"
 		end

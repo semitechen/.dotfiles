@@ -45,7 +45,7 @@ sudo pacman -S intel-ucode linux-firmware sof-firmware alsa-ucm-conf mesa vulkan
 sudo pacman -S pipewire wireplumber pipewire-pulse pipewire-alsa aerc beets w3m openvpn alsa-utils
 
 # X11, Display Scaling, & Utilities
-sudo pacman -S base-devel xorg-server xf86-input-libinput xorg-xinit xorg-setxkbmap xorg-xrandr xclip xorg-xrdb picom rofi dmenu feh brightnessctl
+sudo pacman -S base-devel xorg-server xf86-input-libinput xorg-xinit xorg-setxkbmap xorg-xrandr xclip xorg-xrdb picom rofi feh brightnessctl
 
 # Node & Python (Required for Gemini MCP servers & custom skills)
 sudo pacman -S nodejs npm python python-pip
@@ -109,6 +109,14 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Added `xf86-input-libinput` to `paru/.config/paru/packages.txt`.
     - Created `xorg/30-touchpad.conf` configuring `libinput` with tap-to-click (`Tapping on`), tap mapping (`TappingButtonMap lrm`: 1-finger left, 2-finger right, 3-finger middle), tap-and-drag (`TappingDrag true`), physical clickfinger (`ClickMethod clickfinger`), natural scrolling (`NaturalScrolling true`), two-finger scroll (`ScrollMethod twofinger`), palm rejection (`DisableWhileTyping true`), and standard button mapping `1 2 3 4 5 6 7`.
     - Updated `kickstart.sh` to automatically copy all `$DOTFILES_DIR/xorg/*.conf` configurations to `/etc/X11/xorg.conf.d/`.
+  - Comprehensive configuration and bootstrap audit & bugfixes:
+    - Added missing `iamb` and `ssh` packages to `STOW_PACKAGES` in `kickstart.sh`, added `mkdir -p ~/.ssh` with `0700` permissions, and set `0600` permissions for SSH config and VPN credential files.
+    - Fixed `kitty.conf`: converted `background_image` to absolute path `/home/kacperjelonek/.wallpapers/testbg.png` (fixing Kitty failing to expand `~`) and explicitly defined `font_family JetBrainsMono Nerd Font`.
+    - Fixed `tmux.conf`: resolved `~` to absolute `/home/kacperjelonek` and placed `~/.local/bin` ahead of `/usr/bin` so shadowing wrappers function properly in tmux sessions.
+    - Updated `xinit/.xinitrc`: added `export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"` and `export GTK_USE_PORTAL=1` to ensure X11 apps inherit user binaries and route file dialogs to `xdg-desktop-portal`.
+    - Fixed `portals.conf`: set `default=none` alongside `org.freedesktop.impl.portal.FileChooser=termfilechooser` to prevent portal crashes on unsupported interfaces.
+    - Hardened `yazi-chooser` & `yazi.desktop`: added zero-byte placeholder touch and cancellation cleanup for save dialogs, and added `--class yazi` to `yazi.desktop`.
+    - Hardened Fish shell & paru wrappers: added `paru` to `sudo.fish`, `config.fish`, and `__fish_paste.fish` to prevent fatal root execution errors, switched `paru` wrapper package lookups to exact column match in awk, and replaced `which fish` with `command -v fish`.
 - **2026-10-18**:
   - Configured `dwm` with borderless (`borderpx = 0`), no bar (`showbar = 0`), monocle default layout, and dedicated app tag navigation shortcuts (`Super+d` for tmux, `Super+a` for aerc, `Super+s` for spotatui, `Super+z` for iamb, `Super+x` for helium, `Super+q` for kicad, `Super+Space` for rofi, `Super+Enter` for kitty). Added `Super+e` shortcut to launch Yazi and added floating window rule for `file_chooser`.
   - Implemented RAM-optimized TUI startup: all TUI apps launch under a single `kitty --single-instance` master daemon, sharing GPU sprite cache, OpenGL contexts, and engine to cut RAM from ~400MB to ~80MB total. Windows are routed to tags using `--class` matching.

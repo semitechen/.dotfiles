@@ -145,8 +145,8 @@ for pkg in "${raw_pkgs[@]}"; do
     # Strip extension if local package (.pkg.tar.zst)
     pkg_name="${pkg_name%%-[0-9]*.pkg.tar.*}"
 
-    # Check if already documented in packages.txt
-    existing="$(grep -E "^[[:space:]]*${pkg_name}[[:space:]]+" "$PACKAGE_FILE" 2>/dev/null | head -n 1 || true)"
+    # Check if already documented in packages.txt (exact string match for first column)
+    existing="$(awk -v pkg="$pkg_name" '$1 == pkg { print; exit }' "$PACKAGE_FILE" 2>/dev/null || true)"
     if [ -n "$existing" ]; then
         echo -e "\033[1;34m::\033[0m Package '\033[1;32m$pkg_name\033[0m' already tracked: $existing"
         continue
@@ -214,7 +214,7 @@ if [ $paru_status -eq 0 ]; then
 
         for p in "${!new_comments[@]}"; do
             c="${new_comments[$p]}"
-            if grep -q -E "^[[:space:]]*${p}[[:space:]]+" "$temp_file" 2>/dev/null; then
+            if awk -v pkg="$p" '$1 == pkg { found=1; exit } END { exit !found }' "$temp_file" 2>/dev/null; then
                 # Update existing entry
                 awk -v pkg="$p" -v comm="$c" '
                     $1 == pkg { print pkg " \"" comm "\""; next }

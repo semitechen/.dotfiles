@@ -1,6 +1,6 @@
 function __fish_paste --description "Translate pacman/yay to paru and paste clipboard text"
     # Automatically translate pacman or yay commands (with or without sudo) to paru on paste
-    set -l input (string replace -ra '([;\|\&]+\s*|^)(sudo\s+)?(pacman|yay)\b' '$1paru' -- $argv[1])
+    set -l input (string replace -ra '([;\|\&]+\s*|^)(sudo\s+)?(pacman|yay|paru)\b' '$1paru' -- $argv[1])
 
     # Split on \r and \n
     set -l data (string split \r -- $input | string split \n)

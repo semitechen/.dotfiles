@@ -1,5 +1,11 @@
 [Default Applications]
 inode/directory=yazi.desktop
+x-scheme-handler/http=helium-browser.desktop
+x-scheme-handler/https=helium-browser.desktop
+x-scheme-handler/terminal=kitty.desktop
 
 [Added Associations]
 inode/directory=yazi.desktop;
+x-scheme-handler/http=helium-browser.desktop;
+x-scheme-handler/https=helium-browser.desktop;
+x-scheme-handler/terminal=kitty.desktop;

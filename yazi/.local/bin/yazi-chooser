@@ -32,5 +32,16 @@ termcmd=(
     -o initial_window_height=700
 )
 
+placeholder_created=0
+if [ "$save" = "1" ] && [ -n "$path" ] && [ ! -e "$path" ]; then
+    mkdir -p "$(dirname "$path" 2>/dev/null || echo "$HOME")" 2>/dev/null || true
+    touch "$path" 2>/dev/null && placeholder_created=1 || true
+fi
+
 # Launch yazi targeting the starting directory and writing selection to $out
 "${termcmd[@]}" yazi "$start_dir" --chooser-file="$out"
+
+# If user cancelled selection and a zero-byte placeholder was created, clean it up
+if [ $placeholder_created -eq 1 ] && [ ! -s "$out" ] && [ -f "$path" ] && [ ! -s "$path" ]; then
+    rm -f "$path" 2>/dev/null || true
+fi

@@ -2,9 +2,11 @@
 
 [ -f "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources"
 
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 export TERMINAL=kitty
 export EDITOR=nvim
 export VISUAL=nvim
+export GTK_USE_PORTAL=1
 
 setxkbmap -layout pl -option lv3:alt_switch &
 
