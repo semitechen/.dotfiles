@@ -17,8 +17,8 @@ This document tracks all system differences, required configuration tweaks, and 
 | **Terminal Modifiers** | `cmd+t`, `cmd+w`, `cmd+n` in `kitty.conf` | dwm window management / tmux sessions | ✅ **Handled**: Stripped `cmd+` mappings from `kitty.conf`. Terminal splits and windows managed via `tmux` and `dwm`. |
 | **macOS Options** | `macos_option_as_alt yes` | Not applicable (handled by XKB) | ✅ **Handled**: Removed `macos_option_as_alt` from `kitty.conf`. |
 | **Launcher** | `raycast/` (macOS-only) | `rofi` (X11 / dwm) | ✅ **Handled**: Replaced Raycast with Rofi styled in Tokyo Night (`rofi/`). Deleted `raycast/` on `arch` branch. |
-| **Shell Paths** | `fish_variables` has `/opt/homebrew` | Standard `/usr/bin`, `~/.local/bin`, `~/.cargo/bin` | ✅ **Handled**: Reset `fish_user_paths` to `/home/kacperjelonek/.local/bin` and `/home/kacperjelonek/.cargo/bin`. Updated `config.fish` and `tmux.conf`. |
-| **Paths in Configs & DBs** | `/Users/kacperjelonek` | `/home/kacperjelonek` | ✅ **Handled**: Updated `spotatui/config.yml`, `darktable/darktablerc`. Removed Colima include in `ssh/config`. Untracked dynamic Darktable photo library database (`library.db`) in `.gitignore`. |
+| **Shell Paths** | `fish_variables` has `/opt/homebrew` | Standard `/usr/bin`, `~/.local/bin`, `~/.cargo/bin` | ✅ **Handled**: Reset `fish_user_paths` to `/home/semitechen/.local/bin` and `/home/semitechen/.cargo/bin`. Updated `config.fish` and `tmux.conf`. |
+| **Paths in Configs & DBs** | `/Users/kacperjelonek` | `/home/semitechen` | ✅ **Handled**: Updated `spotatui/config.yml`, `darktable/darktablerc`. Removed Colima include in `ssh/config`. Untracked dynamic Darktable photo library database (`library.db`) in `.gitignore`. |
 | **Darktable Secret Backend** | `apple_keychain` | `auto` (libsecret) | ✅ **Handled**: Changed `pwstorage_backend=auto` in `darktablerc`. |
 | **Tmux Plugins** | TPM manual bootstrap | Auto-bootstrapping script in `tmux.conf` | ✅ **Handled**: Auto-clones and installs plugins on launch. |
 | **Tmux Sessionizer** | `fzf` + `zoxide` popup | `fzf` + `zoxide` popup | ✅ **Handled**: Portable script at `tmux/scripts/sessionizer.sh`. |
@@ -99,6 +99,13 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 ## 4. Post-Migration Notes & Tweaks Log
 
 - **2026-10-19**:
+  - Migrated target system username from `kacperjelonek` to `semitechen` across all configurations:
+    - Updated `kitty.conf` background image path to `/home/semitechen/.wallpapers/testbg.png`.
+    - Updated `tmux.conf` PATH to `/home/semitechen/.local/bin:/home/semitechen/.cargo/bin:...`.
+    - Updated `xdg-desktop-portal-termfilechooser/config` to `/home/semitechen/.local/bin/yazi-chooser`.
+    - Updated `spotatui/config.yml` `local_music_path` to `/home/semitechen/Music/dj/music`.
+    - Updated `fish_variables` universal variable paths for `fish_user_paths` to `/home/semitechen/`.
+    - Updated `darktablerc` import, collect, and plugin default paths to `/home/semitechen`.
   - Fully replaced `xdg-open` and `xdg-mime` with `handlr` (`handlr-regex`):
     - Added `handlr-regex` to `paru/.config/paru/packages.txt`.
     - Created `handlr` stow package with `~/.config/handlr/handlr.toml` enabling Rofi menu selector (`rofi -dmenu -i -p 'Open with:'`) when multiple handlers exist, and regex handler routing YouTube URLs directly to `mpv`.
@@ -111,8 +118,8 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Updated `kickstart.sh` to automatically copy all `$DOTFILES_DIR/xorg/*.conf` configurations to `/etc/X11/xorg.conf.d/`.
   - Comprehensive configuration and bootstrap audit & bugfixes:
     - Added missing `iamb` and `ssh` packages to `STOW_PACKAGES` in `kickstart.sh`, added `mkdir -p ~/.ssh` with `0700` permissions, and set `0600` permissions for SSH config and VPN credential files.
-    - Fixed `kitty.conf`: converted `background_image` to absolute path `/home/kacperjelonek/.wallpapers/testbg.png` (fixing Kitty failing to expand `~`) and explicitly defined `font_family JetBrainsMono Nerd Font`.
-    - Fixed `tmux.conf`: resolved `~` to absolute `/home/kacperjelonek` and placed `~/.local/bin` ahead of `/usr/bin` so shadowing wrappers function properly in tmux sessions.
+    - Fixed `kitty.conf`: converted `background_image` to absolute path `/home/semitechen/.wallpapers/testbg.png` (fixing Kitty failing to expand `~`) and explicitly defined `font_family JetBrainsMono Nerd Font`.
+    - Fixed `tmux.conf`: resolved `~` to absolute `/home/semitechen` and placed `~/.local/bin` ahead of `/usr/bin` so shadowing wrappers function properly in tmux sessions.
     - Updated `xinit/.xinitrc`: added `export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"` and `export GTK_USE_PORTAL=1` to ensure X11 apps inherit user binaries and route file dialogs to `xdg-desktop-portal`.
     - Fixed `portals.conf`: set `default=none` alongside `org.freedesktop.impl.portal.FileChooser=termfilechooser` to prevent portal crashes on unsupported interfaces.
     - Hardened `yazi-chooser` & `yazi.desktop`: added zero-byte placeholder touch and cancellation cleanup for save dialogs, and added `--class yazi` to `yazi.desktop`.
@@ -134,7 +141,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
   - Stripped all `/Users/kacperjelonek` and `/opt/homebrew` references across configs (`tmux.conf`, `config.fish`, `fish_variables`, `aerc.conf`, `spotatui/config.yml`, `darktablerc`, `library.db`, `ssh/config`).
   - Switched Darktable password storage backend from `apple_keychain` to `auto` (`libsecret`).
   - Updated audio player in Darktable from `afplay` to `aplay`.
-  - Migrated Darktable SQLite `film_rolls.folder` database paths to `/home/kacperjelonek`.
+  - Migrated Darktable SQLite `film_rolls.folder` database paths to `/home/semitechen`.
   - Removed macOS Colima SSH include from `ssh/config`.
   - Created `xinit/.xinitrc` with dual-Alt Polish layout (`lv3:alt_switch`), wallpaper restoration, compositor (`picom`), status loop, and dwm execution.
   - Created `dwm/config.h` configured with `MODKEY = Mod4Mask` (Super/Win key), Tokyo Night color scheme, Kitty terminal launcher, dmenu launcher, and hardware multimedia/brightness keybindings for Framework 13 Pro.
