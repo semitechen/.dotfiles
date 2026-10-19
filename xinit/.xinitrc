@@ -2,6 +2,10 @@
 
 [ -f "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources"
 
+export TERMINAL=kitty
+export EDITOR=nvim
+export VISUAL=nvim
+
 setxkbmap -layout pl -option lv3:alt_switch &
 
 xsetroot -cursor_name left_ptr &

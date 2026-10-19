@@ -17,6 +17,9 @@ if status is-interactive
 end
 
 set -gx LC_TIME en_US.UTF-8
+set -gx TERMINAL kitty
+set -gx EDITOR nvim
+set -gx VISUAL nvim
 
 source ~/.config/fish/conf.d/tokyonight_night.fish
 

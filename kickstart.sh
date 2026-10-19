@@ -284,6 +284,7 @@ if command -v handlr >/dev/null 2>&1; then
     handlr set inode/directory yazi.desktop
     handlr set x-scheme-handler/http helium-browser.desktop
     handlr set x-scheme-handler/https helium-browser.desktop
+    handlr set x-scheme-handler/terminal kitty.desktop
     echo -e "${GREEN}✓ Registered default associations via handlr.${RESET}"
 elif command -v xdg-mime >/dev/null 2>&1; then
     xdg-mime default yazi.desktop inode/directory

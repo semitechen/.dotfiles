@@ -16,6 +16,10 @@ case "$1" in
         fi
         ;;
     *)
+        # Fall back to real xdg-mime if available (e.g. for install, uninstall)
+        if [ -x /usr/bin/xdg-mime ]; then
+            exec /usr/bin/xdg-mime "$@"
+        fi
         exec handlr "$@"
         ;;
 esac
