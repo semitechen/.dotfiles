@@ -200,12 +200,16 @@ chmod +x "$DOTFILES_DIR/paru/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || t
 chmod +x "$DOTFILES_DIR/yazi/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/handlr/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null || true
 
-# 7. Apply system-wide X11 keyboard configuration (Polish dual-Alt)
-if [ -f "$DOTFILES_DIR/xorg/00-keyboard.conf" ]; then
-    echo -e "${BLUE}::${RESET} ${BOLD}Installing system-wide Polish dual-Alt XKB configuration...${RESET}"
+# 7. Apply system-wide X11 input configurations (Polish dual-Alt keyboard & Touchpad)
+if [ -d "$DOTFILES_DIR/xorg" ]; then
+    echo -e "${BLUE}::${RESET} ${BOLD}Installing system-wide X11 input configurations (keyboard & touchpad)...${RESET}"
     sudo mkdir -p /etc/X11/xorg.conf.d
-    sudo cp -f "$DOTFILES_DIR/xorg/00-keyboard.conf" /etc/X11/xorg.conf.d/00-keyboard.conf
-    echo -e "${GREEN}✓ Installed /etc/X11/xorg.conf.d/00-keyboard.conf.${RESET}\n"
+    sudo cp -f "$DOTFILES_DIR/xorg/"*.conf /etc/X11/xorg.conf.d/
+    echo -e "${GREEN}✓ Installed X11 configurations in /etc/X11/xorg.conf.d/:${RESET}"
+    for f in "$DOTFILES_DIR/xorg/"*.conf; do
+        [ -f "$f" ] && echo -e "  ${GREEN}→${RESET} /etc/X11/xorg.conf.d/$(basename "$f")"
+    done
+    echo ""
 fi
 
 # 8. Configure & Enable Systemd Services

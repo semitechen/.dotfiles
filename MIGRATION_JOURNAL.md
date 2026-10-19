@@ -10,6 +10,7 @@ This document tracks all system differences, required configuration tweaks, and 
 | :--- | :--- | :--- | :--- |
 | **Window Manager** | macOS WindowServer | `dwm` (X11) | ✅ **Handled**: Managed in a dedicated separate repository with an ultra-minimal setup (fullscreen apps, no borders, no status bar). |
 | **Polish Diacritics (Dual-Alt)** | `kitty.conf` maps `alt+...` via `send_text` | X11 XKB `lv3:alt_switch` | ✅ **Handled**: Configured `setxkbmap -layout pl -option lv3:alt_switch` in `xinit/.xinitrc` and persistent `xorg/00-keyboard.conf`. Both Left and Right Alt act as AltGr system-wide (Framework 13 PC layout). Stripped macOS `send_text` overrides from `kitty.conf`. |
+| **Touchpad & Gestures** | macOS trackpad gestures & natural scrolling | X11 libinput (`30-touchpad.conf`) | ✅ **Handled**: Configured tap-to-click (`Tapping on`), natural scrolling (`NaturalScrolling true`), clickfinger method (`ClickMethod clickfinger`, `ClickfingerMap lrm` for 1-finger left, 2-finger right, 3-finger middle click), and button order `1 2 3 4 5 6 7` in `/etc/X11/xorg.conf.d/30-touchpad.conf`. Driver `xf86-input-libinput` managed in `packages.txt`. |
 | **System Openers** | `/usr/bin/open` | `handlr` (`xdg-open` shadow) | ✅ **Handled**: Completely replaced `xdg-open` and `xdg-mime` with `handlr` (`handlr-regex`). Shadowed via `~/.local/bin/xdg-open`, `~/.local/bin/xdg-mime`, and `/usr/local/bin/xdg-open`. Configured Rofi selector and YouTube/mpv regex handling in `handlr.toml`. |
 | **URL Opening in Terminal** | `Shift + Click` / `Ctrl + Shift + e` (Hints) | `Shift + Click` / `Ctrl + Shift + e` (Hints) | ✅ **Handled**: Kitty built-in URL handling bypasses terminal app mouse grabs (`aerc`, `nvim`). |
 | **Clipboard** | `pbcopy` / `pbpaste` | `xclip` (X11) | ✅ **Handled**: Neovim uses `"+y` / `"+p` with `xclip`. No macOS clipboard tool invocations remain in dotfiles. |
@@ -44,7 +45,7 @@ sudo pacman -S intel-ucode linux-firmware sof-firmware alsa-ucm-conf mesa vulkan
 sudo pacman -S pipewire wireplumber pipewire-pulse pipewire-alsa aerc beets w3m openvpn alsa-utils
 
 # X11, Display Scaling, & Utilities
-sudo pacman -S base-devel xorg-server xorg-xinit xorg-setxkbmap xorg-xrandr xclip xorg-xrdb picom rofi dmenu feh brightnessctl
+sudo pacman -S base-devel xorg-server xf86-input-libinput xorg-xinit xorg-setxkbmap xorg-xrandr xclip xorg-xrdb picom rofi dmenu feh brightnessctl
 
 # Node & Python (Required for Gemini MCP servers & custom skills)
 sudo pacman -S nodejs npm python python-pip
@@ -104,6 +105,10 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Created executable wrappers `~/.local/bin/xdg-open` and `~/.local/bin/xdg-mime` (shadowing `xdg-utils` commands via user PATH precedence) mapping `xdg-open "$@"` to `handlr open "$@"` and translating `xdg-mime` subcommands (`default`, `query`) to `handlr set` and `handlr get`. Added safe fallback in `xdg-mime` to `/usr/bin/xdg-mime` for XML MIME registration commands (`install`, `uninstall`).
     - Configured default terminal environment: exported `TERMINAL=kitty`, `EDITOR=nvim`, and `VISUAL=nvim` in `xinit/.xinitrc` and `fish/config.fish`, and registered `x-scheme-handler/terminal` to `kitty.desktop` so CLI/TUI apps launched via `.desktop` files execute directly in Kitty.
     - Automated system-wide shadow wrapper `/usr/local/bin/xdg-open` and default file/protocol association registration (`inode/directory` -> `yazi.desktop`, `http[s]` -> `helium-browser.desktop`, `terminal` -> `kitty.desktop`) in `kickstart.sh`.
+  - Configured touchpad clicks and natural scrolling for Framework 13:
+    - Added `xf86-input-libinput` to `paru/.config/paru/packages.txt`.
+    - Created `xorg/30-touchpad.conf` configuring `libinput` with tap-to-click (`Tapping on`), natural scrolling (`NaturalScrolling true`), finger click method (`ClickMethod clickfinger` with `ClickfingerMap lrm`: 1 finger left click, 2 finger right click, 3 finger middle click), and standard button mapping `1 2 3 4 5 6 7`.
+    - Updated `kickstart.sh` to automatically copy all `$DOTFILES_DIR/xorg/*.conf` configurations to `/etc/X11/xorg.conf.d/`.
 - **2026-10-18**:
   - Configured `dwm` with borderless (`borderpx = 0`), no bar (`showbar = 0`), monocle default layout, and dedicated app tag navigation shortcuts (`Super+d` for tmux, `Super+a` for aerc, `Super+s` for spotatui, `Super+z` for iamb, `Super+x` for helium, `Super+q` for kicad, `Super+Space` for rofi, `Super+Enter` for kitty). Added `Super+e` shortcut to launch Yazi and added floating window rule for `file_chooser`.
   - Implemented RAM-optimized TUI startup: all TUI apps launch under a single `kitty --single-instance` master daemon, sharing GPU sprite cache, OpenGL contexts, and engine to cut RAM from ~400MB to ~80MB total. Windows are routed to tags using `--class` matching.
