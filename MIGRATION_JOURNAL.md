@@ -107,7 +107,8 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 - **2026-10-20**:
   - Comprehensive pre-flight system and configuration bug audit:
     - Fixed YAML syntax violation in `beets/config.yaml`: quoted `default` and `singleton` path templates starting with `%the{...}` to comply with YAML directive specification.
-    - Added missing runtime packages to `packages.txt`: `xorg-xsetroot` (for dwm mouse cursor setup), `xorg-xauth` (for SSH X11 forwarding to `pul` and `cadence`), and `git-lfs` (required by gitconfig filter configuration).
+    - Added missing runtime packages to `packages.txt`: `xorg-xsetroot` (for dwm mouse cursor setup), `xorg-xauth` (for SSH X11 forwarding to `pul` and `cadence`), `git-lfs` (required by gitconfig filter configuration), `adwaita-cursors` (for `Xcursor.theme: Adwaita` in `~/.Xresources`), `imagemagick` (for `magick`/`convert` in `aerc` image viewer), and `python-discogs-client` & `python-spotipy` (for `beets` plugins).
+    - Updated `kickstart.sh`: automated system-wide shadowing of both `xdg-open` and `xdg-mime` via `handlr` into `/usr/local/bin`.
     - Updated `darktable/darktablerc`: migrated photo library collection history paths from `~/Pictures/Darktable` to `~/workspaces/Darktable` to match the new flat folder layout.
     - Updated `xinit/.xinitrc`: added `dunst &` to autostart the notification daemon on X11 login to prevent DBus notification timeouts.
   - Reorganized personal and work directory architecture under `$HOME`:

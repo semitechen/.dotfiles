@@ -318,14 +318,17 @@ elif command -v xdg-mime >/dev/null 2>&1; then
     echo -e "${GREEN}✓ Registered Yazi as default handler for inode/directory.${RESET}"
 fi
 
-# Shadow xdg-open system-wide with handlr (/usr/local/bin/xdg-open)
+# Shadow xdg-open & xdg-mime system-wide with handlr (/usr/local/bin)
 if command -v handlr >/dev/null 2>&1; then
     sudo tee /usr/local/bin/xdg-open >/dev/null << 'EOF'
 #!/bin/sh
 exec handlr open "$@"
 EOF
     sudo chmod +x /usr/local/bin/xdg-open
-    echo -e "${GREEN}✓ Shadowed xdg-open with handlr system-wide (/usr/local/bin/xdg-open).${RESET}\n"
+
+    sudo cp -f "$DOTFILES_DIR/handlr/.local/bin/xdg-mime" /usr/local/bin/xdg-mime
+    sudo chmod +x /usr/local/bin/xdg-mime
+    echo -e "${GREEN}✓ Shadowed xdg-open & xdg-mime with handlr system-wide (/usr/local/bin).${RESET}\n"
 else
     echo ""
 fi
