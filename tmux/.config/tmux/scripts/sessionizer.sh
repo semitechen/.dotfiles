@@ -15,7 +15,7 @@ else
     # Add standard project and config directories
     while IFS= read -r line; do
         [ -d "$line" ] && dirs+=("$line")
-    done < <(find "$HOME/Documents" "$HOME/Downloads" "$HOME/.dotfiles" "$HOME/Music" -mindepth 1 -maxdepth 2 -type d 2>/dev/null)
+    done < <(find "$HOME/projects" "$HOME/hardwire" "$HOME/studia" "$HOME/notes" "$HOME/workspaces" "$HOME/.dotfiles" -mindepth 1 -maxdepth 2 -type d 2>/dev/null)
 
     # Dedup and pick via fzf
     selected=$(printf '%s\n' "${dirs[@]}" | awk '!seen[$0]++' | fzf --reverse --prompt="⚡ Session > ")

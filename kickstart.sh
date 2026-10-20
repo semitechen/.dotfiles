@@ -164,11 +164,16 @@ mkdir -p \
     "$HOME/.local/share" \
     "$HOME/.local/src" \
     "$HOME/.ssh" \
+    "$HOME/archive" \
+    "$HOME/hardwire" \
+    "$HOME/media" \
     "$HOME/music/artists" \
     "$HOME/music/playlists" \
-    "$HOME/Pictures/Darktable" \
-    "$HOME/Downloads" \
-    "$HOME/Documents"
+    "$HOME/notes" \
+    "$HOME/projects" \
+    "$HOME/studia" \
+    "$HOME/workspaces" \
+    "$HOME/Downloads"
 chmod 700 "$HOME/.ssh" 2>/dev/null || true
 
 # 5. Stow dotfiles packages

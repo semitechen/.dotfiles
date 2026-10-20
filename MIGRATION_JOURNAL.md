@@ -105,6 +105,10 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Updated `xdg-desktop-portal-termfilechooser/config` to `/home/semitechen/.local/bin/yazi-chooser`.
     - Updated `spotatui/config.yml` `local_music_path` to `/home/semitechen/music/artists`.
 - **2026-10-20**:
+  - Reorganized personal and work directory architecture under `$HOME`:
+    - Flattened nested `~/Documents` into top-level domain roots: `~/projects`, `~/hardwire`, `~/notes`, `~/studia`, `~/archive`, `~/media`, and `~/workspaces`.
+    - Updated `kickstart.sh` directory provisioning to create all 9 top-level domain folders on fresh install.
+    - Updated `tmux` sessionizer (`sessionizer.sh`) to scan `~/projects`, `~/hardwire`, `~/studia`, `~/notes`, `~/workspaces`, and `~/.dotfiles` for instant `fzf` project fuzzy jumping.
   - Migrated music and DJ collection layout for Linux:
     - Moved DJ library root from `~/Music/dj` to `~/music`.
     - Renamed audio library directory from `music/` to `artists/` (`~/music/artists`).
