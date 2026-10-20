@@ -333,7 +333,11 @@ else
     echo ""
 fi
 
-# 9. Set Default User Shell to Fish
+# 9. Hardware User Groups & Default Shell
+echo -e "${BLUE}::${RESET} ${BOLD}Configuring hardware access groups for user '$USER'...${RESET}"
+sudo usermod -aG video,uucp,input "$USER" 2>/dev/null || true
+echo -e "${GREEN}✓ Added '$USER' to video (brightnessctl), uucp (FPGA/serial), and input groups.${RESET}\n"
+
 if command -v fish >/dev/null 2>&1; then
     FISH_BIN="$(command -v fish)"
     CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"

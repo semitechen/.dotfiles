@@ -107,11 +107,12 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 - **2026-10-20**:
   - Comprehensive pre-flight system and configuration bug audit:
     - Fixed YAML syntax violation in `beets/config.yaml`: quoted `default` and `singleton` path templates starting with `%the{...}` to comply with YAML directive specification.
-    - Added missing runtime packages to `packages.txt`: `xorg-xsetroot` (for dwm mouse cursor setup), `xorg-xauth` (for SSH X11 forwarding to `pul` and `cadence`), `git-lfs` (required by gitconfig filter configuration), `adwaita-cursors` (for `Xcursor.theme: Adwaita` in `~/.Xresources`), `imagemagick` (for `magick`/`convert` in `aerc` image viewer), and `python-discogs-client` & `python-spotipy` (for `beets` plugins).
-    - Updated `kickstart.sh`: automated system-wide shadowing of both `xdg-open` and `xdg-mime` via `handlr` into `/usr/local/bin`.
+    - Added missing runtime packages to `packages.txt`: `xorg-xsetroot` (for dwm mouse cursor setup), `xorg-xauth` (for SSH X11 forwarding to `pul` and `cadence`), `git-lfs` (required by gitconfig filter configuration), `adwaita-cursors` (for `Xcursor.theme: Adwaita` in `~/.Xresources`), `imagemagick` (for `magick`/`convert` in `aerc` image viewer), `python-discogs-client` & `python-spotipy` (for `beets` plugins), and `playerctl` (MPRIS media controller for spotatui).
+    - Updated `kickstart.sh`: automated system-wide shadowing of both `xdg-open` and `xdg-mime` via `handlr` into `/usr/local/bin`, and added user to hardware access groups (`video` for brightnessctl, `uucp` for serial/FPGA/Pico, `input` for libinput).
+    - Updated `tmux-powerline/config.sh`: switched `TMUX_POWERLINE_SEG_NOW_PLAYING_MUSIC_PLAYER` to `playerctl` to display track information natively from `spotatui` (or Helium / mpv) via MPRIS.
     - Updated `darktable/darktablerc`: migrated photo library collection history paths from `~/Pictures/Darktable` to `~/workspaces/Darktable` to match the new flat folder layout.
     - Updated `xinit/.xinitrc`: added `dunst &` to autostart the notification daemon on X11 login to prevent DBus notification timeouts.
-    - Updated `dwm` repository (`semitechen/dwm`): configured `<X11/XF86keysym.h>` bindings for hardware multimedia and brightness keys on Framework 13 Pro (Volume Up/Down/Mute via `wpctl` and Screen Brightness Up/Down via `brightnessctl`), committed and pushed to GitHub.
+    - Updated `dwm` repository (`semitechen/dwm`): configured `<X11/XF86keysym.h>` bindings for hardware multimedia and brightness keys on Framework 13 Pro (Volume Up/Down/Mute via `wpctl`, Screen Brightness Up/Down via `brightnessctl`, and Play/Next/Prev via `playerctl`), committed and pushed to GitHub.
   - Reorganized personal and work directory architecture under `$HOME`:
     - Flattened nested `~/Documents` into top-level domain roots: `~/projects`, `~/hardwire`, `~/notes`, `~/studia`, `~/archive`, `~/media`, and `~/workspaces`.
     - Updated `kickstart.sh` directory provisioning to create all 9 top-level domain folders on fresh install.
