@@ -105,6 +105,11 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Updated `xdg-desktop-portal-termfilechooser/config` to `/home/semitechen/.local/bin/yazi-chooser`.
     - Updated `spotatui/config.yml` `local_music_path` to `/home/semitechen/music/artists`.
 - **2026-10-20**:
+  - Comprehensive pre-flight system and configuration bug audit:
+    - Fixed YAML syntax violation in `beets/config.yaml`: quoted `default` and `singleton` path templates starting with `%the{...}` to comply with YAML directive specification.
+    - Added missing runtime packages to `packages.txt`: `xorg-xsetroot` (for dwm mouse cursor setup), `xorg-xauth` (for SSH X11 forwarding to `pul` and `cadence`), and `git-lfs` (required by gitconfig filter configuration).
+    - Updated `darktable/darktablerc`: migrated photo library collection history paths from `~/Pictures/Darktable` to `~/workspaces/Darktable` to match the new flat folder layout.
+    - Updated `xinit/.xinitrc`: added `dunst &` to autostart the notification daemon on X11 login to prevent DBus notification timeouts.
   - Reorganized personal and work directory architecture under `$HOME`:
     - Flattened nested `~/Documents` into top-level domain roots: `~/projects`, `~/hardwire`, `~/notes`, `~/studia`, `~/archive`, `~/media`, and `~/workspaces`.
     - Updated `kickstart.sh` directory provisioning to create all 9 top-level domain folders on fresh install.

@@ -17,8 +17,8 @@ import:
   threaded: no
 
 paths:
-  default: %the{$primary_artist}/$artist - $title
-  singleton: %the{$primary_artist}/$artist - $title
+  default: '%the{$primary_artist}/$artist - $title'
+  singleton: '%the{$primary_artist}/$artist - $title'
 
 plugins:
   - spotify

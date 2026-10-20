@@ -24,6 +24,10 @@ if command -v picom >/dev/null 2>&1; then
     picom -b &
 fi
 
+if command -v dunst >/dev/null 2>&1; then
+    dunst &
+fi
+
 # Autostart TUI applications under kitty using single-instance daemon mode.
 # Sharing one GPU sprite cache, OpenGL context, and runtime drastically reduces RAM usage.
 if command -v kitty >/dev/null 2>&1; then
