@@ -103,7 +103,15 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Updated `kitty.conf` background image path to `/home/semitechen/.wallpapers/testbg.png`.
     - Updated `tmux.conf` PATH to `/home/semitechen/.local/bin:/home/semitechen/.cargo/bin:...`.
     - Updated `xdg-desktop-portal-termfilechooser/config` to `/home/semitechen/.local/bin/yazi-chooser`.
-    - Updated `spotatui/config.yml` `local_music_path` to `/home/semitechen/Music/dj/music`.
+    - Updated `spotatui/config.yml` `local_music_path` to `/home/semitechen/music/artists`.
+- **2026-10-20**:
+  - Migrated music and DJ collection layout for Linux:
+    - Moved DJ library root from `~/Music/dj` to `~/music`.
+    - Renamed audio library directory from `music/` to `artists/` (`~/music/artists`).
+    - Configured Beets `config.yaml` (`directory: ~/music/artists`, `library: ~/music/beetslibrary.blb`, `playlist_dir: ~/music/playlists`).
+    - Fixed Beets `primary_artist` item_field regex to prevent mid-word separator truncation (e.g. `Daft Punk` -> `Da`).
+    - Updated `kickstart.sh` directory provisioning to create `~/music/artists` and `~/music/playlists`.
+    - Updated `spotatui` and `tui_app_run.fish` music path targets to `$HOME/music/artists`.
     - Updated `fish_variables` universal variable paths for `fish_user_paths` to `/home/semitechen/`.
     - Updated `darktablerc` import, collect, and plugin default paths to `/home/semitechen`.
   - Fully replaced `xdg-open` and `xdg-mime` with `handlr` (`handlr-regex`):

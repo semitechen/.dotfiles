@@ -164,8 +164,8 @@ mkdir -p \
     "$HOME/.local/share" \
     "$HOME/.local/src" \
     "$HOME/.ssh" \
-    "$HOME/Music/dj/music" \
-    "$HOME/Music/dj/playlists" \
+    "$HOME/music/artists" \
+    "$HOME/music/playlists" \
     "$HOME/Pictures/Darktable" \
     "$HOME/Downloads" \
     "$HOME/Documents"

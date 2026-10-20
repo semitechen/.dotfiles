@@ -97,7 +97,7 @@ behavior:
   keepawake_enabled: true
   enable_media_keys: true
   sync_token: null
-  local_music_path: /home/semitechen/Music/dj/music
+  local_music_path: /home/semitechen/music/artists
   subsonic_url: null
   subsonic_username: null
   subsonic_password: null

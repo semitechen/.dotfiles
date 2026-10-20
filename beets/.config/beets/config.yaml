@@ -4,8 +4,8 @@ include:
 
 pluginpath: ~/.config/beets/plugins
 
-directory: ~/Music/dj/music
-library: ~/Music/dj/beetslibrary.blb
+directory: ~/music/artists
+library: ~/music/beetslibrary.blb
 
 import:
   move: yes
@@ -102,10 +102,9 @@ xtractor:
 
 item_fields:
   primary_artist: |
-    a = artist
-    for sep in [',', '&', 'feat.', 'feat ', 'ft.', 'feat', 'ft', 'vs.', 'vs ', ' x ']:
-        a = a.split(sep)[0]
-    return a.strip()
+    import re
+    match = re.split(r'\s+(?:feat\.?|ft\.?|vs\.?|x|&)\s+|,|\s+-\s+', artist, flags=re.IGNORECASE)
+    return match[0].strip() if match else artist.strip()
   camelot: |
     try:
         k = initial_key
@@ -160,8 +159,8 @@ ftintitle:
   drop: no
 
 dj_playlists:
-  relative_to: ~/Music/dj/playlists
-  playlist_dir: ~/Music/dj/playlists
+  relative_to: ~/music/playlists
+  playlist_dir: ~/music/playlists
   auto: yes
   extm3u: yes
   playlists:

@@ -21,8 +21,8 @@ class DJPlaylistsPlugin(BeetsPlugin):
         
         # Professional, sane defaults
         self.config.add({
-            'playlist_dir': '~/Music/dj/playlists',
-            'relative_to': '~/Music/dj/playlists',
+            'playlist_dir': '~/music/playlists',
+            'relative_to': '~/music/playlists',
             'extm3u': True,
             'auto': False,  # Default to NOT running generation on every exit
             'playlists': []

@@ -18,7 +18,7 @@ function tui_app_run --description 'Run a TUI application in an auto-restarting 
     if test "$app" = "spotatui"
         set -l spotatui_cfg "$HOME/.config/spotatui/config.yml"
         if test -f "$spotatui_cfg"
-            sed -i.bak -E "s|([ ]*local_music_path:)[ ]*.*|\1 $HOME/Music/dj/music|" "$spotatui_cfg" 2>/dev/null; and rm -f "$spotatui_cfg.bak"
+            sed -i.bak -E "s|([ ]*local_music_path:)[ ]*.*|\1 $HOME/music/artists|" "$spotatui_cfg" 2>/dev/null; and rm -f "$spotatui_cfg.bak"
         end
     end
 
