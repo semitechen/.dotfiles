@@ -111,6 +111,7 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - Updated `kickstart.sh`: automated system-wide shadowing of both `xdg-open` and `xdg-mime` via `handlr` into `/usr/local/bin`.
     - Updated `darktable/darktablerc`: migrated photo library collection history paths from `~/Pictures/Darktable` to `~/workspaces/Darktable` to match the new flat folder layout.
     - Updated `xinit/.xinitrc`: added `dunst &` to autostart the notification daemon on X11 login to prevent DBus notification timeouts.
+    - Updated `dwm` repository (`semitechen/dwm`): configured `<X11/XF86keysym.h>` bindings for hardware multimedia and brightness keys on Framework 13 Pro (Volume Up/Down/Mute via `wpctl` and Screen Brightness Up/Down via `brightnessctl`), committed and pushed to GitHub.
   - Reorganized personal and work directory architecture under `$HOME`:
     - Flattened nested `~/Documents` into top-level domain roots: `~/projects`, `~/hardwire`, `~/notes`, `~/studia`, `~/archive`, `~/media`, and `~/workspaces`.
     - Updated `kickstart.sh` directory provisioning to create all 9 top-level domain folders on fresh install.
