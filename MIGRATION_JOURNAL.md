@@ -99,6 +99,23 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 ## 4. Post-Migration Notes & Tweaks Log
 
 - **2026-10-21**:
+  - Full keyboard continuity, CJK typography, app provisioning, and branch synchronization:
+    - **CJK & Unicode Font Fallback**: Resolved Chinese/CJK characters displaying as tofu/squares by installing `wqy-microhei` outline font, adding `symbol_map` in `kitty.conf` covering CJK Unified Ideographs and punctuation (`U+4E00-U+9FFF`, `U+3400-U+4DBF`, `U+3000-U+303F`, `U+FF00-U+FFEF`), and tracking `wqy-microhei`, `noto-fonts-cjk`, and `noto-fonts-emoji` in `packages.txt`.
+    - **Alt / Option & Polish Diacritic Continuity**:
+      - Diagnosed and resolved broken `Alt+.` and `Alt+,` shortcuts in terminal and tmux: previously `Option "XkbOptions" "lv3:alt_switch"` mapped `<LALT>` to `ISO_Level3_Shift`, converting Left Alt into a Level 3 modifier that outputted `greaterthanequal` (`≥`) on period and `lessthanequal` (`≤`) on comma while stripping `Mod1` (Alt/Meta).
+      - Removed `lv3:alt_switch` from `xorg/00-keyboard.conf` and `xinit/.xinitrc`. Left Alt is now a true `Alt_L` (`Mod1`), while Right Alt serves as the standard system-wide `AltGr` (`ISO_Level3_Shift`).
+      - Mapped Polish diacritics for Left Alt in `kitty.conf` (`alt+a` -> `ą`, `alt+c` -> `ć`, etc.), enabling seamless dual-Alt muscle memory in terminal without hijacking Alt/Meta punctuation.
+      - Added `\e.` (`history-token-search-backward`) and `\e,` (`history-token-search-forward`) bindings in `fish/config.fish`.
+    - **App Availability & Autostart Completeness**:
+      - Created `/usr/local/bin/helium` alias to `/usr/bin/helium-browser` and automated it in `kickstart.sh` so `helium` executes directly.
+      - Added missing Tag 6 KiCad hardware EDA autostart to `xinit/.xinitrc` alongside tmux, aerc, spotatui, iamb, and helium.
+      - Confirmed 101 of 102 packages installed; documented manual upstream archive requirement for `davinci-resolve`.
+    - **Repository & Stow Hygiene**:
+      - Purged accidental stow symlinks and `.local` remnants from `fish/`.
+      - Updated `.gitignore` to exclude `antigravity-cli` runtime logs, databases, and caches.
+      - Added `.gitignore` in `~/.dwm` for build objects and binaries.
+      - Restowed all 23 GNU Stow packages cleanly with zero conflicts.
+      - Fully synchronized and pushed `main` and `arch` branches to GitHub.
   - Comprehensive bootstrap automation, packaging, and association hardening:
     - **Bootstrap `git-crypt` Pre-check**: Fixed fatal bootstrapping bug in `kickstart.sh` where fresh installs attempted `git-crypt unlock` without `git-crypt` being installed on the system, which would abort the script. Added upfront `pacman -S --needed --noconfirm git-crypt` check.
     - **Default File Associations**: Registered standard desktop associations across `yazi/.config/mimeapps.list` and `kickstart.sh` (`text/plain` -> `nvim.desktop`, `application/pdf` -> `helium-browser.desktop`, `image/png` / `image/jpeg` -> `feh.desktop`, `video/mp4` / `video/quicktime` -> `mpv.desktop`).
