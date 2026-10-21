@@ -106,6 +106,11 @@ done < "$PACKAGE_FILE"
 
 echo -e "${GREEN}✓${RESET} Identified ${BOLD}${#packages[@]}${RESET} packages to install."
 
+# Pre-emptively remove conflicting power-profiles-daemon if present
+if pacman -Qq power-profiles-daemon >/dev/null 2>&1; then
+    sudo pacman -Rdd --noconfirm power-profiles-daemon 2>/dev/null || true
+fi
+
 echo -e "\n${BLUE}::${RESET} ${BOLD}Installing packages via paru (unattended with --needed)...${RESET}"
 set +e
 paru -S --needed --noconfirm "${packages[@]}"
@@ -283,10 +288,14 @@ if systemctl list-unit-files bluetooth.service >/dev/null 2>&1; then
     echo -e "${GREEN}✓ Enabled Bluetooth daemon (bluez).${RESET}"
 fi
 
-# Power Profiles Daemon (Framework recommended for Intel Core Ultra)
-if systemctl list-unit-files power-profiles-daemon.service >/dev/null 2>&1; then
-    sudo systemctl enable --now power-profiles-daemon
-    echo -e "${GREEN}✓ Enabled power-profiles-daemon.${RESET}"
+# TuneD Power Management & tuned-ppd Translation Daemon
+if systemctl list-unit-files tuned.service >/dev/null 2>&1; then
+    sudo systemctl enable --now tuned
+    echo -e "${GREEN}✓ Enabled TuneD power daemon.${RESET}"
+fi
+if systemctl list-unit-files tuned-ppd.service >/dev/null 2>&1; then
+    sudo systemctl enable --now tuned-ppd
+    echo -e "${GREEN}✓ Enabled tuned-ppd service.${RESET}"
 fi
 
 # SSD TRIM timer for Lexar NM790 NVMe
@@ -347,24 +356,24 @@ echo -e "${GREEN}✓ Enabled xdg-desktop-portal service for Yazi file chooser.${
 
 # Register default application associations via handlr & xdg-mime
 if command -v handlr >/dev/null 2>&1; then
-    handlr set inode/directory yazi.desktop
-    handlr set x-scheme-handler/http helium-browser.desktop
-    handlr set x-scheme-handler/https helium-browser.desktop
-    handlr set x-scheme-handler/terminal kitty.desktop
-    handlr set text/plain nvim.desktop
-    handlr set application/pdf helium-browser.desktop
-    handlr set image/png feh.desktop
-    handlr set image/jpeg feh.desktop
-    handlr set video/mp4 mpv.desktop
-    handlr set video/quicktime mpv.desktop
+    handlr set inode/directory yazi.desktop 2>/dev/null || true
+    handlr set x-scheme-handler/http helium.desktop 2>/dev/null || true
+    handlr set x-scheme-handler/https helium.desktop 2>/dev/null || true
+    handlr set x-scheme-handler/terminal kitty.desktop 2>/dev/null || true
+    handlr set text/plain nvim.desktop 2>/dev/null || true
+    handlr set application/pdf helium.desktop 2>/dev/null || true
+    handlr set image/png feh.desktop 2>/dev/null || true
+    handlr set image/jpeg feh.desktop 2>/dev/null || true
+    handlr set video/mp4 mpv.desktop 2>/dev/null || true
+    handlr set video/quicktime mpv.desktop 2>/dev/null || true
     echo -e "${GREEN}✓ Registered default associations via handlr.${RESET}"
 elif command -v xdg-mime >/dev/null 2>&1; then
-    xdg-mime default yazi.desktop inode/directory
-    xdg-mime default helium-browser.desktop x-scheme-handler/http x-scheme-handler/https application/pdf
-    xdg-mime default kitty.desktop x-scheme-handler/terminal
-    xdg-mime default nvim.desktop text/plain
-    xdg-mime default feh.desktop image/png image/jpeg
-    xdg-mime default mpv.desktop video/mp4 video/quicktime
+    xdg-mime default yazi.desktop inode/directory 2>/dev/null || true
+    xdg-mime default helium.desktop x-scheme-handler/http x-scheme-handler/https application/pdf 2>/dev/null || true
+    xdg-mime default kitty.desktop x-scheme-handler/terminal 2>/dev/null || true
+    xdg-mime default nvim.desktop text/plain 2>/dev/null || true
+    xdg-mime default feh.desktop image/png image/jpeg 2>/dev/null || true
+    xdg-mime default mpv.desktop video/mp4 video/quicktime 2>/dev/null || true
     echo -e "${GREEN}✓ Registered default associations via xdg-mime.${RESET}"
 fi
 
