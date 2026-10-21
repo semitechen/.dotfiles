@@ -1432,11 +1432,13 @@ xkb_symbols "pc+pl+inet(evdev)" {
     };
     key <AB08> {
         type= "FOUR_LEVEL",
-        symbols[Group1]= [           comma,            less,           comma,            less ]
+        symbols[Group1]= [           comma,            less,           comma,            less ],
+        actions[Group1]= [ NoAction(), NoAction(), RedirectKey(keycode=<AB08>, modifiers=Mod1, clearModifiers=LevelThree), RedirectKey(keycode=<AB08>, modifiers=Mod1+Shift, clearModifiers=LevelThree) ]
     };
     key <AB09> {
         type= "FOUR_LEVEL",
-        symbols[Group1]= [          period,         greater,          period,         greater ]
+        symbols[Group1]= [          period,         greater,          period,         greater ],
+        actions[Group1]= [ NoAction(), NoAction(), RedirectKey(keycode=<AB09>, modifiers=Mod1, clearModifiers=LevelThree), RedirectKey(keycode=<AB09>, modifiers=Mod1+Shift, clearModifiers=LevelThree) ]
     };
     key <AB10> {
         type= "FOUR_LEVEL",

@@ -15,9 +15,13 @@ if status is-interactive
 	bind \r __auto_translate_pacman_yay
 	bind \n __auto_translate_pacman_yay
 
-	# Muscle memory token search (Alt+. and Alt+,)
+	# Muscle memory token search (Alt+. and Alt+, and raw Polish AltGr fallbacks)
 	bind \e. history-token-search-backward
 	bind \e, history-token-search-forward
+	bind \e\x2e history-token-search-backward
+	bind \e\x2c history-token-search-forward
+	bind ≤ history-token-search-forward
+	bind ≥ history-token-search-backward
 end
 
 set -gx LC_TIME en_US.UTF-8

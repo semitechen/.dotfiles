@@ -102,10 +102,16 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
   - Full keyboard continuity, CJK typography, app provisioning, and branch synchronization:
     - **CJK & Unicode Font Fallback**: Resolved Chinese/CJK characters displaying as tofu/squares by installing `wqy-microhei` outline font, adding `symbol_map` in `kitty.conf` covering CJK Unified Ideographs and punctuation (`U+4E00-U+9FFF`, `U+3400-U+4DBF`, `U+3000-U+303F`, `U+FF00-U+FFEF`), and tracking `wqy-microhei`, `noto-fonts-cjk`, and `noto-fonts-emoji` in `packages.txt`.
     - **Alt / Option & Polish Diacritic Continuity**:
-      - Diagnosed and resolved broken `Alt+.` and `Alt+,` shortcuts in terminal and tmux: previously `Option "XkbOptions" "lv3:alt_switch"` mapped `<LALT>` to `ISO_Level3_Shift`, converting Left Alt into a Level 3 modifier that outputted `greaterthanequal` (`≥`) on period and `lessthanequal` (`≤`) on comma while stripping `Mod1` (Alt/Meta).
-      - Removed `lv3:alt_switch` from `xorg/00-keyboard.conf` and `xinit/.xinitrc`. Left Alt is now a true `Alt_L` (`Mod1`), while Right Alt serves as the standard system-wide `AltGr` (`ISO_Level3_Shift`).
-      - Mapped Polish diacritics for Left Alt in `kitty.conf` (`alt+a` -> `ą`, `alt+c` -> `ć`, etc.), enabling seamless dual-Alt muscle memory in terminal without hijacking Alt/Meta punctuation.
-      - Added `\e.` (`history-token-search-backward`) and `\e,` (`history-token-search-forward`) bindings in `fish/config.fish`.
+      - Diagnosed and resolved broken `Alt+.` and `Alt+,` shortcuts across terminal, tmux, and GUI apps: previously `Option "XkbOptions" "lv3:alt_switch"` mapped `<LALT>` to `ISO_Level3_Shift`, converting Left Alt into a Level 3 modifier that outputted `greaterthanequal` (`≥`) on period and `lessthanequal` (`≤`) on comma while stripping `Mod1` (Alt/Meta).
+      - Removed `lv3:alt_switch` from `xorg/00-keyboard.conf` and `xinit/.xinitrc`. Left Alt is a true `Alt_L` (`Mod1`), while Right Alt serves as standard `AltGr` (`ISO_Level3_Shift`).
+      - In `xinit/.config/xkb/custom.xkb`, implemented XKB `RedirectKey` actions for comma `<AB08>` and period `<AB09>` so that Level 3 (Right Alt) redirects to `keycode` with `modifiers=Mod1` and `clearModifiers=LevelThree` (and Level 4 with `Shift+Mod1`). This converts Right Alt + `,` and Right Alt + `.` at the core X11 event dispatch level into true Alt+, and Alt+. events across all GUI (Helium, KiCad) and CLI applications without altering any of the 9 Polish diacritics (`ą, ć, ę, ł, ń, ó, ś, ź, ż`).
+      - Fixed startup race condition in `xinit/.xinitrc` by executing `xkbcomp` synchronously before launching dwm and client applications.
+      - Implemented multi-tier application fallbacks:
+        * `kitty.conf`: Added explicit `alt+,`, `alt+.`, `alt+shift+,`, `alt+shift+.` bindings mapping to `\x1b,`, `\x1b.`, `\x1b<`, `\x1b>` alongside raw `≤` and `≥` mappings.
+        * `fish/config.fish`: Added `\e.`, `\e,`, `≤`, and `≥` to `history-token-search-backward` and `history-token-search-forward`.
+        * `aerc/binds.conf`: Added `≤` and `≥` fallback bindings to `:prev-tab` and `:next-tab` across `[messages]`, `[compose]`, `[compose::editor]`, and `[terminal]`.
+        * `iamb/config.toml`: Added `<A-,>`, `<A-.>`, `≤`, and `≥` to `:tabp` and `:tabn` under `[macros.normal]`.
+        * `nvim/lua/plugins/ui.lua`: Configured `<A-,>`, `<A-.>`, `≤`, and `≥` to cycle tabs via BufferLine.
     - **App Availability & Autostart Completeness**:
       - Created `/usr/local/bin/helium` alias to `/usr/bin/helium-browser` and automated it in `kickstart.sh` so `helium` executes directly.
       - Added missing Tag 6 KiCad hardware EDA autostart to `xinit/.xinitrc` alongside tmux, aerc, spotatui, iamb, and helium.

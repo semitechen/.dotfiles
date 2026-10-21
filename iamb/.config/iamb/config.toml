@@ -28,6 +28,10 @@ spaces = ["favorite", "recent"]
 
 [macros.normal]
 "\\" = ":rooms<CR>"
+"<A-,>" = ":tabp<CR>"
+"<A-.>" = ":tabn<CR>"
+"≤" = ":tabp<CR>"
+"≥" = ":tabn<CR>"
 "<A-l>" = ":react heart<CR>"
 "ł" = ":react heart<CR>"
 "<A-r>" = ":reply<CR>i"

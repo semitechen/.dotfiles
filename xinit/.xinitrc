@@ -14,8 +14,11 @@ export XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}"
 systemctl --user import-environment DISPLAY XAUTHORITY GTK_USE_PORTAL PATH 2>/dev/null || true
 dbus-update-activation-environment --systemd DISPLAY XAUTHORITY GTK_USE_PORTAL PATH 2>/dev/null || true
 
-setxkbmap -layout pl -option "" &
-[ -f "$HOME/.config/xkb/custom.xkb" ] && xkbcomp "$HOME/.config/xkb/custom.xkb" "$DISPLAY" 2>/dev/null &
+if [ -f "$HOME/.config/xkb/custom.xkb" ]; then
+    xkbcomp -w 0 "$HOME/.config/xkb/custom.xkb" "$DISPLAY" 2>/dev/null
+else
+    setxkbmap -layout pl -option ""
+fi
 
 xsetroot -cursor_name left_ptr &
 
