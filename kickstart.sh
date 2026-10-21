@@ -199,7 +199,6 @@ mkdir -p \
     "$HOME/music/playlists" \
     "$HOME/notes" \
     "$HOME/projects" \
-    "$HOME/github" \
     "$HOME/studia" \
     "$HOME/workspaces" \
     "$HOME/Downloads"
@@ -411,9 +410,9 @@ fi
 
 # 10. Clone, build, and install dwm
 echo -e "${BLUE}::${RESET} ${BOLD}Installing suckless dwm window manager...${RESET}"
-DWM_DIR="$HOME/.local/src/dwm"
+DWM_DIR="$HOME/.dwm"
 if [ ! -d "$DWM_DIR" ]; then
-    echo "Cloning dwm repository..."
+    echo "Cloning dwm repository to ~/.dwm..."
     git clone https://github.com/semitechen/dwm.git "$DWM_DIR"
 else
     echo "Updating dwm repository..."

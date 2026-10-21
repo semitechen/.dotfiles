@@ -79,8 +79,8 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 4. **Install dwm**:
    - Clone and compile your minimal dwm build from its dedicated repository:
      ```bash
-     git clone <your-dwm-repo> ~/.local/src/dwm
-     cd ~/.local/src/dwm && sudo make clean install
+     git clone https://github.com/semitechen/dwm.git ~/.dwm
+     cd ~/.dwm && sudo make clean install
      ```
 
 6. **Initialize Shell & Plugins**:
