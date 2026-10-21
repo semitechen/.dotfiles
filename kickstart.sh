@@ -58,11 +58,29 @@ if [ ! -f "$PACKAGE_FILE" ]; then
     exit 1
 fi
 
-# Check if git-crypt repository is unlocked
+# Check if git-crypt repository is unlocked (auto-detect key if available)
+if head -c 10 "$PACKAGE_FILE" 2>/dev/null | grep -q "GITCRYPT"; then
+    KEY_CANDIDATE="${1:-}"
+    if [ -z "$KEY_CANDIDATE" ] || [ ! -f "$KEY_CANDIDATE" ]; then
+        for candidate in "$HOME/dotfiles.key" /run/media/*/*/dotfiles.key /mnt/*/dotfiles.key; do
+            if [ -f "$candidate" ]; then
+                KEY_CANDIDATE="$candidate"
+                break
+            fi
+        done
+    fi
+
+    if [ -n "$KEY_CANDIDATE" ] && [ -f "$KEY_CANDIDATE" ]; then
+        echo -e "${BLUE}::${RESET} ${BOLD}Auto-unlocking git-crypt with key: $KEY_CANDIDATE...${RESET}"
+        git-crypt unlock "$KEY_CANDIDATE"
+    fi
+fi
+
 if head -c 10 "$PACKAGE_FILE" 2>/dev/null | grep -q "GITCRYPT"; then
     echo -e "${RED}[Error] Dotfiles repository is still encrypted!${RESET}" >&2
     echo -e "Please unlock git-crypt before running kickstart:" >&2
-    echo -e "  git-crypt unlock /path/to/dotfiles.key\n" >&2
+    echo -e "  git-crypt unlock /path/to/dotfiles.key" >&2
+    echo -e "Or pass the key path directly: ./kickstart.sh /path/to/dotfiles.key\n" >&2
     exit 1
 fi
 
@@ -207,6 +225,15 @@ STOW_PACKAGES=(
 
 for pkg in "${STOW_PACKAGES[@]}"; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
+        # Back up any pre-existing regular files that would cause stow conflicts
+        while IFS= read -r file; do
+            rel="${file#"$DOTFILES_DIR/$pkg/"}"
+            dest="$HOME/$rel"
+            if [ -f "$dest" ] && [ ! -L "$dest" ]; then
+                echo -e "  ${YELLOW}↳ Backing up conflicting file: $dest -> $dest.stowbak${RESET}"
+                mv "$dest" "$dest.stowbak"
+            fi
+        done < <(find "$DOTFILES_DIR/$pkg" -type f 2>/dev/null)
         stow --restow -v -d "$DOTFILES_DIR" -t "$HOME" "$pkg" 2>&1 | sed 's/^/  /'
     fi
 done
@@ -242,6 +269,12 @@ echo -e "${BLUE}::${RESET} ${BOLD}Configuring system services for Framework 13 P
 if systemctl list-unit-files NetworkManager.service >/dev/null 2>&1; then
     sudo systemctl enable --now NetworkManager
     echo -e "${GREEN}✓ Enabled NetworkManager.${RESET}"
+fi
+
+# Bluetooth Daemon (bluez)
+if systemctl list-unit-files bluetooth.service >/dev/null 2>&1; then
+    sudo systemctl enable --now bluetooth
+    echo -e "${GREEN}✓ Enabled Bluetooth daemon (bluez).${RESET}"
 fi
 
 # Power Profiles Daemon (Framework recommended for Intel Core Ultra)
