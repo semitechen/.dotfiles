@@ -89,6 +89,13 @@ fi
 mkdir -p "$(dirname "$PACKAGE_FILE")" 2>/dev/null || true
 touch "$PACKAGE_FILE" 2>/dev/null || true
 
+# Check if git-crypt repository is locked before performing any write operations
+if head -c 10 "$PACKAGE_FILE" 2>/dev/null | grep -q "GITCRYPT"; then
+    echo -e "\033[1;31m[Error]\033[0m '$PACKAGE_FILE' is encrypted with git-crypt." >&2
+    echo -e "Please run 'git-crypt unlock /path/to/dotfiles.key' before installing packages." >&2
+    exit 1
+fi
+
 # 3. Detect if this is an installation operation and extract target packages
 is_install=0
 is_search_or_info=0
@@ -103,7 +110,7 @@ for arg in "$@"; do
     fi
 
     case "$arg" in
-        --config|--cachedir|--color|--dbpath|--gpgdir|--hookdir|--logfile|--root|--arch)
+        --config|--cachedir|--color|--dbpath|--gpgdir|--hookdir|--logfile|--root|--arch|--overwrite|--assume-installed|--ignore|--ignoregroup)
             skip_next=1
             continue
             ;;
@@ -138,6 +145,15 @@ fi
 # 4. Mandatory comment prompt for each target package
 declare -A new_comments
 
+# Open prompt file descriptors: /dev/tty when interactive, stdin/stderr when redirected
+if [ -t 0 ]; then
+    exec 3< /dev/tty 2>/dev/null || exec 3<&0
+    exec 4> /dev/tty 2>/dev/null || exec 4>&2
+else
+    exec 3<&0
+    exec 4>&2
+fi
+
 for pkg in "${raw_pkgs[@]}"; do
     # Strip repository prefix or file path (e.g. aur/songrec -> songrec, extra/git -> git)
     pkg_name="$(basename "$pkg")"
@@ -152,21 +168,13 @@ for pkg in "${raw_pkgs[@]}"; do
         continue
     fi
 
-    # Open prompt file descriptors: /dev/tty when interactive, stdin/stderr when redirected
-    if [ -t 0 ]; then
-        exec 3< /dev/tty 2>/dev/null || exec 3<&0
-        exec 4> /dev/tty 2>/dev/null || exec 4>&2
-    else
-        exec 3<&0
-        exec 4>&2
-    fi
-
     # Mandatory comment loop - cannot be empty, cannot be skipped
     while true; do
         echo -ne "\033[1;35m::\033[0m \033[1mWhy are you installing '\033[1;32m$pkg_name\033[0m\033[1m'? (mandatory reason):\033[0m " >&4
         if ! IFS= read -r comment <&3; then
             echo "" >&4
             echo -e "\033[1;31m[Error]\033[0m Input interrupted. Installation aborted." >&2
+            exec 3<&- 4>&- 2>/dev/null || true
             exit 1
         fi
 
@@ -179,12 +187,16 @@ for pkg in "${raw_pkgs[@]}"; do
             continue
         fi
 
-        # Normalize any surrounding quotes
+        # Normalize surrounding quotes and escape internal double quotes
         comment="$(echo "$comment" | sed -e 's/^["“”]//' -e 's/["“”]$//')"
+        comment="${comment//\"/\'}"
         new_comments["$pkg_name"]="$comment"
         break
     done
 done
+
+# Cleanly close prompt file descriptors before executing paru / pacman
+exec 3<&- 4>&- 2>/dev/null || true
 
 # 5. Execute real paru / pacman
 # Automatically append --noconfirm to bypass all installation prompts (unless --confirm was explicitly specified)

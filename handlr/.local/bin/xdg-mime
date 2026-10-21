@@ -2,8 +2,12 @@
 # xdg-mime wrapper shadowing system xdg-mime with handlr
 case "$1" in
     default)
-        # xdg-mime default <application.desktop> <mimetype>
-        exec handlr set "$3" "$2"
+        # xdg-mime default <application.desktop> <mimetype>...
+        app="$2"
+        shift 2
+        for mime in "$@"; do
+            handlr set "$mime" "$app"
+        done
         ;;
     query)
         # xdg-mime query default <mimetype>

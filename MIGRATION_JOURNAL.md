@@ -98,6 +98,21 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
 
 ## 4. Post-Migration Notes & Tweaks Log
 
+- **2026-10-21**:
+  - Comprehensive bootstrap automation, packaging, and association hardening:
+    - **Bootstrap `git-crypt` Pre-check**: Fixed fatal bootstrapping bug in `kickstart.sh` where fresh installs attempted `git-crypt unlock` without `git-crypt` being installed on the system, which would abort the script. Added upfront `pacman -S --needed --noconfirm git-crypt` check.
+    - **Default File Associations**: Registered standard desktop associations across `yazi/.config/mimeapps.list` and `kickstart.sh` (`text/plain` -> `nvim.desktop`, `application/pdf` -> `helium-browser.desktop`, `image/png` / `image/jpeg` -> `feh.desktop`, `video/mp4` / `video/quicktime` -> `mpv.desktop`).
+    - **Paru Wrapper Hardening**:
+      - Added git-crypt lock protection in `paru/.local/bin/paru` to prevent plain text appends from corrupting encrypted `packages.txt`.
+      - Expanded CLI option parser to skip arguments for `--overwrite`, `--assume-installed`, `--ignore`, and `--ignoregroup`.
+      - Hoisted interactive prompt file descriptors (FDs 3 and 4) outside the per-package loop and explicitly closed them (`exec 3<&- 4>&-`) prior to delegating to real `paru`/`pacman` binary.
+      - Escaped internal double quotes in comment inputs to ensure clean formatting in `packages.txt`.
+    - **Shadowing & Mime Wrapper Robustness**:
+      - Updated `kickstart.sh` to copy `handlr/.local/bin/xdg-open` directly to `/usr/local/bin/xdg-open` ensuring single-source-of-truth.
+      - Updated `handlr/.local/bin/xdg-mime` `default` action to loop over all supplied MIME types so multi-argument calls set all targets cleanly.
+    - **Tmux Sessionizer Filtering**: Excluded `.git`, `node_modules`, and `__pycache__` directories from `find` in `sessionizer.sh` to eliminate repository and cache clutter in the `fzf` session picker.
+    - **Security & Privacy Permissions**: Added `0700` directory permission enforcement for `~/.vpn` and its subdirectories in `kickstart.sh`.
+    - **Darktable Config Cleanup**: Updated export file directory pattern in `darktablerc` from legacy `/home/semitechen/Pictures/skany/...` to `/home/semitechen/media/$(FILE_NAME)` and updated collect history entry 5 to `/home/semitechen/workspaces/Darktable$`.
 - **2026-10-19**:
   - Migrated target system username from `kacperjelonek` to `semitechen` across all configurations:
     - Updated `kitty.conf` background image path to `/home/semitechen/.wallpapers/testbg.png`.

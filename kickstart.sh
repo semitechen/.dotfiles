@@ -45,12 +45,17 @@ trap 'kill $SUDO_PID 2>/dev/null || true' EXIT
 if ! command -v paru >/dev/null 2>&1; then
     echo -e "${YELLOW}[Warning] 'paru' was not found in PATH.${RESET}"
     echo -e "Ensuring base-devel and git are installed before building paru..."
-    sudo pacman -S --needed --noconfirm base-devel git
+    sudo pacman -S --needed --noconfirm base-devel git git-crypt
     echo -e "Attempting to bootstrap paru-bin from AUR..."
     BOOTSTRAP_DIR="$(mktemp -d)"
     git clone https://aur.archlinux.org/paru-bin.git "$BOOTSTRAP_DIR"
     (cd "$BOOTSTRAP_DIR" && makepkg -si --noconfirm)
     rm -rf "$BOOTSTRAP_DIR"
+fi
+
+if ! command -v git-crypt >/dev/null 2>&1; then
+    echo -e "${BLUE}::${RESET} ${BOLD}Installing git-crypt via pacman...${RESET}"
+    sudo pacman -S --needed --noconfirm git-crypt
 fi
 
 if [ ! -f "$PACKAGE_FILE" ]; then
@@ -248,6 +253,7 @@ chmod +x "$DOTFILES_DIR/tmux/.config/tmux/scripts/sessionizer.sh" 2>/dev/null ||
 chmod +x "$DOTFILES_DIR/aerc/.config/aerc/filters/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/beets/.config/beets/essentia_extractor" 2>/dev/null || true
 chmod 600 "$DOTFILES_DIR/ssh/.ssh/config" "$HOME/.ssh/config" 2>/dev/null || true
+chmod 700 "$DOTFILES_DIR/vpn/.vpn" "$DOTFILES_DIR/vpn/.vpn"/* 2>/dev/null || true
 chmod 600 "$DOTFILES_DIR/vpn/.vpn"/*/* 2>/dev/null || true
 
 # 7. Apply system-wide X11 input configurations (Polish dual-Alt keyboard & Touchpad)
@@ -345,20 +351,27 @@ if command -v handlr >/dev/null 2>&1; then
     handlr set x-scheme-handler/http helium-browser.desktop
     handlr set x-scheme-handler/https helium-browser.desktop
     handlr set x-scheme-handler/terminal kitty.desktop
+    handlr set text/plain nvim.desktop
+    handlr set application/pdf helium-browser.desktop
+    handlr set image/png feh.desktop
+    handlr set image/jpeg feh.desktop
+    handlr set video/mp4 mpv.desktop
+    handlr set video/quicktime mpv.desktop
     echo -e "${GREEN}✓ Registered default associations via handlr.${RESET}"
 elif command -v xdg-mime >/dev/null 2>&1; then
     xdg-mime default yazi.desktop inode/directory
-    echo -e "${GREEN}✓ Registered Yazi as default handler for inode/directory.${RESET}"
+    xdg-mime default helium-browser.desktop x-scheme-handler/http x-scheme-handler/https application/pdf
+    xdg-mime default kitty.desktop x-scheme-handler/terminal
+    xdg-mime default nvim.desktop text/plain
+    xdg-mime default feh.desktop image/png image/jpeg
+    xdg-mime default mpv.desktop video/mp4 video/quicktime
+    echo -e "${GREEN}✓ Registered default associations via xdg-mime.${RESET}"
 fi
 
 # Shadow xdg-open & xdg-mime system-wide with handlr (/usr/local/bin)
 if command -v handlr >/dev/null 2>&1; then
-    sudo tee /usr/local/bin/xdg-open >/dev/null << 'EOF'
-#!/bin/sh
-exec handlr open "$@"
-EOF
+    sudo cp -f "$DOTFILES_DIR/handlr/.local/bin/xdg-open" /usr/local/bin/xdg-open
     sudo chmod +x /usr/local/bin/xdg-open
-
     sudo cp -f "$DOTFILES_DIR/handlr/.local/bin/xdg-mime" /usr/local/bin/xdg-mime
     sudo chmod +x /usr/local/bin/xdg-mime
     echo -e "${GREEN}✓ Shadowed xdg-open & xdg-mime with handlr system-wide (/usr/local/bin).${RESET}\n"
