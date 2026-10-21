@@ -51,6 +51,7 @@ fi
 # 3. Dedicated TUI applications
 if command -v kitty >/dev/null 2>&1; then
     command -v aerc >/dev/null 2>&1 && kitty --class aerc aerc &
+    rm -f "$HOME/.local/state/spotatui/instance.lock" "$HOME/.local/state/spotatui/instance.pid" 2>/dev/null || true
     command -v spotatui >/dev/null 2>&1 && kitty --class spotatui spotatui &
     command -v iamb >/dev/null 2>&1 && kitty --class iamb iamb &
 fi
