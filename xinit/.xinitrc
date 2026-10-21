@@ -34,9 +34,11 @@ if command -v kitty >/dev/null 2>&1; then
     # 1. Primary daemon instance: main terminal with persistent tmux session (Super+d / Tag 1)
     kitty --single-instance --class tmux tmux new-session -A -s main &
 
-    # 2. Wait briefly until kitty daemon socket is ready
-    while ! pgrep -x kitty >/dev/null 2>&1; do
+    # 2. Wait briefly until kitty daemon socket is ready (timeout 3s)
+    count=0
+    while ! pgrep -x kitty >/dev/null 2>&1 && [ $count -lt 30 ]; do
         sleep 0.1
+        count=$((count + 1))
     done
     sleep 0.2
 

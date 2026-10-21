@@ -40,12 +40,12 @@ echo -e "${BLUE}::${RESET} ${BOLD}Authenticating sudo for system setup...${RESET
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 SUDO_PID=$!
-trap 'kill $SUDO_PID 2>/dev/null || true' EXIT
+trap 'kill $SUDO_PID 2>/dev/null || true' INT TERM EXIT
 
 if ! command -v paru >/dev/null 2>&1; then
     echo -e "${YELLOW}[Warning] 'paru' was not found in PATH.${RESET}"
     echo -e "Ensuring base-devel and git are installed before building paru..."
-    sudo pacman -S --needed --noconfirm base-devel git git-crypt
+    sudo pacman -S --needed --noconfirm base-devel git git-crypt stow
     echo -e "Attempting to bootstrap paru-bin from AUR..."
     BOOTSTRAP_DIR="$(mktemp -d)"
     git clone https://aur.archlinux.org/paru-bin.git "$BOOTSTRAP_DIR"
@@ -53,9 +53,9 @@ if ! command -v paru >/dev/null 2>&1; then
     rm -rf "$BOOTSTRAP_DIR"
 fi
 
-if ! command -v git-crypt >/dev/null 2>&1; then
-    echo -e "${BLUE}::${RESET} ${BOLD}Installing git-crypt via pacman...${RESET}"
-    sudo pacman -S --needed --noconfirm git-crypt
+if ! command -v git-crypt >/dev/null 2>&1 || ! command -v stow >/dev/null 2>&1; then
+    echo -e "${BLUE}::${RESET} ${BOLD}Ensuring git-crypt and stow are installed via pacman...${RESET}"
+    sudo pacman -S --needed --noconfirm git-crypt stow
 fi
 
 if [ ! -f "$PACKAGE_FILE" ]; then
@@ -408,9 +408,13 @@ else
     (cd "$DWM_DIR" && git pull --ff-only 2>/dev/null || true)
 fi
 
-echo "Compiling and installing dwm..."
-(cd "$DWM_DIR" && sudo make clean install)
-echo -e "${GREEN}✓ dwm installed to /usr/local/bin/dwm.${RESET}\n"
+if [ -d "$DWM_DIR" ]; then
+    echo "Compiling and installing dwm..."
+    (cd "$DWM_DIR" && sudo make clean install)
+    echo -e "${GREEN}✓ dwm installed to /usr/local/bin/dwm.${RESET}\n"
+else
+    echo -e "${RED}[Error] dwm directory $DWM_DIR not found. Skipping dwm installation.${RESET}\n"
+fi
 
 # 11. Next Steps Summary
 echo -e "${BOLD}${GREEN}=====================================================${RESET}"

@@ -113,6 +113,9 @@ sudo pacman -S ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
     - **Tmux Sessionizer Filtering**: Excluded `.git`, `node_modules`, and `__pycache__` directories from `find` in `sessionizer.sh` to eliminate repository and cache clutter in the `fzf` session picker.
     - **Security & Privacy Permissions**: Added `0700` directory permission enforcement for `~/.vpn` and its subdirectories in `kickstart.sh`.
     - **Darktable Config Cleanup**: Updated export file directory pattern in `darktablerc` from legacy `/home/semitechen/Pictures/skany/...` to `/home/semitechen/media/$(FILE_NAME)` and updated collect history entry 5 to `/home/semitechen/workspaces/Darktable$`.
+    - **Fail-safe Autostart Timeout in `.xinitrc`**: Replaced unbounded `while ! pgrep -x kitty` loop with a bounded 3-second timeout (`[ $count -lt 30 ]`) to prevent X11 freeze in case Kitty fails to launch.
+    - **Pre-provisioning `stow` & Signal Handling in `kickstart.sh`**: Added `stow` to initial pacman base installation ensuring dotfiles can always be linked even on partial package installs, expanded sudo keep-alive cleanup trap to `INT TERM EXIT`, and added directory safety check before compiling dwm.
+    - **GNU Stow Ignore Hygiene**: Added `__pycache__`, `.*\.pyc$`, and `.*\.stowbak$` to `.stow-local-ignore`.
 - **2026-10-19**:
   - Migrated target system username from `kacperjelonek` to `semitechen` across all configurations:
     - Updated `kitty.conf` background image path to `/home/semitechen/.wallpapers/testbg.png`.
