@@ -38,7 +38,7 @@ fi
 # Authenticate sudo upfront and keep session alive during unattended package installs
 echo -e "${BLUE}::${RESET} ${BOLD}Authenticating sudo for system setup...${RESET}"
 sudo -v
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done </dev/null >/dev/null 2>&1 &
 SUDO_PID=$!
 trap 'kill $SUDO_PID 2>/dev/null || true' INT TERM EXIT
 
@@ -432,3 +432,6 @@ echo -e "${BOLD}${GREEN}=====================================================${R
 
 echo -e "You can now launch your minimal dwm desktop with:\n"
 echo -e "     ${BOLD}startx${RESET}\n"
+
+kill "$SUDO_PID" 2>/dev/null || true
+exit 0
