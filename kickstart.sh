@@ -390,6 +390,17 @@ else
     echo ""
 fi
 
+# Ensure helium CLI binary alias exists
+if command -v helium-browser >/dev/null 2>&1 && ! command -v helium >/dev/null 2>&1; then
+    sudo ln -sf "$(command -v helium-browser)" /usr/local/bin/helium
+    echo -e "${GREEN}✓ Created CLI alias /usr/local/bin/helium -> helium-browser.${RESET}\n"
+fi
+
+# Refresh font cache
+echo -e "${BLUE}::${RESET} ${BOLD}Updating font cache...${RESET}"
+fc-cache -f >/dev/null 2>&1 || true
+echo -e "${GREEN}✓ Font cache updated.${RESET}\n"
+
 # 9. Hardware User Groups & Default Shell
 echo -e "${BLUE}::${RESET} ${BOLD}Configuring hardware access groups for user '$USER'...${RESET}"
 sudo usermod -aG video,uucp,input "$USER" 2>/dev/null || true

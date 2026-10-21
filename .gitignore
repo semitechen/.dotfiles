@@ -43,6 +43,8 @@ beets/.config/beets/state.pickle
 # Gemini / Antigravity
 gemini/.gemini/config/projects/
 gemini/.gemini/config/.migrated
+gemini/.gemini/antigravity-cli/*
+!gemini/.gemini/antigravity-cli/settings.json
 
 
 # SSH

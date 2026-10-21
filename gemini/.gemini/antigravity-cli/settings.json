@@ -1,8 +1,9 @@
 {
   "allowNonWorkspaceAccess": true,
   "colorScheme": "tokyo night",
-  "enableTelemetry": false,
   "model": "Gemini 3.7 Flash (High)",
   "toolPermission": "always-proceed",
-  "trustedWorkspaces": []
+  "trustedWorkspaces": [
+    "/home/semitechen/.dotfiles"
+  ]
 }

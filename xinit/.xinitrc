@@ -8,7 +8,7 @@ export EDITOR=nvim
 export VISUAL=nvim
 export GTK_USE_PORTAL=1
 
-setxkbmap -layout pl -option lv3:alt_switch &
+setxkbmap -layout pl -option "" &
 
 xsetroot -cursor_name left_ptr &
 
@@ -35,6 +35,7 @@ fi
 # Tag 3 (Super+s): spotatui (music)
 # Tag 4 (Super+z): iamb (chat)
 # Tag 5 (Super+x): helium (web browser)
+# Tag 6 (Super+q): kicad (hardware EDA)
 
 # 1. Primary terminal running tmux session
 if command -v kitty >/dev/null 2>&1; then
@@ -46,6 +47,11 @@ if command -v helium-browser >/dev/null 2>&1; then
     helium-browser &
 elif command -v helium >/dev/null 2>&1; then
     helium &
+fi
+
+# 3. Hardware EDA (KiCad)
+if command -v kicad >/dev/null 2>&1; then
+    kicad &
 fi
 
 # 3. Dedicated TUI applications
