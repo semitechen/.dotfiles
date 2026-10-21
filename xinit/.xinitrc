@@ -20,32 +20,39 @@ if command -v feh >/dev/null 2>&1; then
     fi
 fi
 
+# Compositor with all fading/animations disabled
 if command -v picom >/dev/null 2>&1; then
-    picom -b &
+    picom -b --config "$HOME/.config/picom/picom.conf" 2>/dev/null || picom -b --no-fading-openclose &
 fi
 
 if command -v dunst >/dev/null 2>&1; then
     dunst &
 fi
 
-# Autostart TUI applications under kitty using single-instance daemon mode.
-# Sharing one GPU sprite cache, OpenGL context, and runtime drastically reduces RAM usage.
+# Autostart dedicated applications with genuine WM_CLASS for dwm tag rules:
+# Tag 1 (Super+d): tmux (main terminal)
+# Tag 2 (Super+a): aerc (email)
+# Tag 3 (Super+s): spotatui (music)
+# Tag 4 (Super+z): iamb (chat)
+# Tag 5 (Super+x): helium (web browser)
+
+# 1. Primary terminal running tmux session
 if command -v kitty >/dev/null 2>&1; then
-    # 1. Primary daemon instance: main terminal with persistent tmux session (Super+d / Tag 1)
-    kitty --single-instance --class tmux tmux new-session -A -s main &
+    kitty --class tmux tmux new-session -A -s main &
+fi
 
-    # 2. Wait briefly until kitty daemon socket is ready (timeout 3s)
-    count=0
-    while ! pgrep -x kitty >/dev/null 2>&1 && [ $count -lt 30 ]; do
-        sleep 0.1
-        count=$((count + 1))
-    done
-    sleep 0.2
+# 2. Web browser (Helium)
+if command -v helium-browser >/dev/null 2>&1; then
+    helium-browser &
+elif command -v helium >/dev/null 2>&1; then
+    helium &
+fi
 
-    # 3. Spawn child TUI windows attaching to the single kitty master process
-    command -v aerc >/dev/null 2>&1 && kitty --single-instance --class aerc aerc &
-    command -v spotatui >/dev/null 2>&1 && kitty --single-instance --class spotatui spotatui &
-    command -v iamb >/dev/null 2>&1 && kitty --single-instance --class iamb iamb &
+# 3. Dedicated TUI applications
+if command -v kitty >/dev/null 2>&1; then
+    command -v aerc >/dev/null 2>&1 && kitty --class aerc aerc &
+    command -v spotatui >/dev/null 2>&1 && kitty --class spotatui spotatui &
+    command -v iamb >/dev/null 2>&1 && kitty --class iamb iamb &
 fi
 
 exec dwm

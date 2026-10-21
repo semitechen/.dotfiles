@@ -113,7 +113,7 @@ behavior:
   status_message_ttl_percent: 100
   playback_poll_seconds: 5
   table_scroll_padding: 5
-  like_animation_frames: 10
+  like_animation_frames: 0
   startup_route: home
   default_sort_playlist_tracks: default
   default_sort_saved_albums: default

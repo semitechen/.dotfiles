@@ -231,6 +231,7 @@ STOW_PACKAGES=(
     systemd
     fastfetch
     handlr
+    picom
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -257,6 +258,7 @@ chmod +x "$DOTFILES_DIR/handlr/.local/bin/"* "$HOME/.local/bin/"* 2>/dev/null ||
 chmod +x "$DOTFILES_DIR/tmux/.config/tmux/scripts/sessionizer.sh" 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/aerc/.config/aerc/filters/"* 2>/dev/null || true
 chmod +x "$DOTFILES_DIR/beets/.config/beets/essentia_extractor" 2>/dev/null || true
+chmod 600 "$DOTFILES_DIR/aerc/.config/aerc/accounts.conf" "$HOME/.config/aerc/accounts.conf" 2>/dev/null || true
 chmod 600 "$DOTFILES_DIR/ssh/.ssh/config" "$HOME/.ssh/config" 2>/dev/null || true
 chmod 700 "$DOTFILES_DIR/vpn/.vpn" "$DOTFILES_DIR/vpn/.vpn"/* 2>/dev/null || true
 chmod 600 "$DOTFILES_DIR/vpn/.vpn"/*/* 2>/dev/null || true
