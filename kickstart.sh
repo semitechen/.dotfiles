@@ -199,6 +199,7 @@ mkdir -p \
     "$HOME/music/playlists" \
     "$HOME/notes" \
     "$HOME/projects" \
+    "$HOME/github" \
     "$HOME/studia" \
     "$HOME/workspaces" \
     "$HOME/Downloads"

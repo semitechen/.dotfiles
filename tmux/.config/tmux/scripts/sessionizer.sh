@@ -15,7 +15,7 @@ else
     # Add standard project and config directories (excluding internal git, node, and python cache dirs)
     while IFS= read -r line; do
         [ -d "$line" ] && dirs+=("$line")
-    done < <(find "$HOME/projects" "$HOME/hardwire" "$HOME/studia" "$HOME/notes" "$HOME/workspaces" "$HOME/.dotfiles" -mindepth 1 -maxdepth 2 -type d 2>/dev/null | grep -vE '/(\.git|node_modules|__pycache__)(/|$)')
+    done < <(find "$HOME/github" "$HOME/projects" "$HOME/hardwire" "$HOME/studia" "$HOME/notes" "$HOME/workspaces" "$HOME/.dotfiles" -mindepth 1 -maxdepth 2 -type d 2>/dev/null | grep -vE '/(\.git|node_modules|__pycache__)(/|$)')
 
     # Dedup and pick via fzf
     selected=$(printf '%s\n' "${dirs[@]}" | awk '!seen[$0]++' | fzf --reverse --prompt="⚡ Session > ")
