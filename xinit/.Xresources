@@ -11,5 +11,5 @@ Xft.hintstyle: hintslight
 Xft.rgba: rgb
 
 ! Cursor scaling for HiDPI
-Xcursor.size: 48
+Xcursor.size: 36
 Xcursor.theme: Adwaita

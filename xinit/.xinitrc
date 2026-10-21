@@ -22,13 +22,7 @@ fi
 
 xsetroot -cursor_name left_ptr &
 
-if command -v feh >/dev/null 2>&1; then
-    if [ -f "$HOME/.wallpapers/testbg.png" ]; then
-        feh --bg-fill "$HOME/.wallpapers/testbg.png" &
-    elif [ -f "$HOME/.dotfiles/wallpapers/.wallpapers/testbg.png" ]; then
-        feh --bg-fill "$HOME/.dotfiles/wallpapers/.wallpapers/testbg.png" &
-    fi
-fi
+feh --bg-fill "$HOME/.wallpapers/wallpaper" &
 
 # Compositor with all fading/animations disabled
 if command -v picom >/dev/null 2>&1; then
@@ -60,9 +54,9 @@ elif command -v helium >/dev/null 2>&1; then
 fi
 
 # 3. Hardware EDA (KiCad)
-if command -v kicad >/dev/null 2>&1; then
-    kicad &
-fi
+#if command -v kicad >/dev/null 2>&1; then
+#    kicad &
+#fi
 
 # 3. Dedicated TUI applications
 if command -v kitty >/dev/null 2>&1; then
