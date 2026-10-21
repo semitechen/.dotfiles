@@ -7,8 +7,15 @@ export TERMINAL=kitty
 export EDITOR=nvim
 export VISUAL=nvim
 export GTK_USE_PORTAL=1
+export DISPLAY="${DISPLAY:-:0}"
+export XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}"
+
+# Propagate environment to DBus and systemd user services for XDG Desktop Portal
+systemctl --user import-environment DISPLAY XAUTHORITY GTK_USE_PORTAL PATH 2>/dev/null || true
+dbus-update-activation-environment --systemd DISPLAY XAUTHORITY GTK_USE_PORTAL PATH 2>/dev/null || true
 
 setxkbmap -layout pl -option "" &
+[ -f "$HOME/.config/xkb/custom.xkb" ] && xkbcomp "$HOME/.config/xkb/custom.xkb" "$DISPLAY" 2>/dev/null &
 
 xsetroot -cursor_name left_ptr &
 

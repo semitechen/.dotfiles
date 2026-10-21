@@ -33,6 +33,8 @@ return {
         keys = {
             { '<A-,>', '<Cmd>BufferLineCyclePrev<CR>', desc = 'Previous tab' },
             { '<A-.>', '<Cmd>BufferLineCycleNext<CR>', desc = 'Next tab' },
+            { '≤', '<Cmd>BufferLineCyclePrev<CR>', desc = 'Previous tab' },
+            { '≥', '<Cmd>BufferLineCycleNext<CR>', desc = 'Next tab' },
         },
         opts = {
             options = {
