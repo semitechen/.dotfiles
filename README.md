@@ -1,43 +1,77 @@
 # Dotfiles
 
-Managed with [GNU Stow](https://www.gnu.org/software/stow/) and secured via [git-crypt](https://github.com/AGWA/git-crypt).
+Clean, minimalist, and distraction-free workstation environment for Arch Linux on Framework 13 Pro.
+
+Managed with [GNU Stow](https://www.gnu.org/software/stow/) and secured at rest via [git-crypt](https://github.com/AGWA/git-crypt).
+
+---
+
+## Philosophy & Workflow
+
+- **Window Management**: Custom build of [dwm](https://github.com/semitechen/dwm) — strictly tiled, borderless (`0px`), and status-bar free for complete focus.
+- **Instant Responsiveness**: Zero animations, zero transitions, and zero fading across the compositor (`picom`), terminal, and applications.
+- **Dedicated Workspaces**: Auto-started tags mapped to physical keys:
+  - **Tag 1** (`Super+d`): Main terminal & persistent `tmux` session
+  - **Tag 2** (`Super+a`): Email ([aerc](https://aerc-mail.org/))
+  - **Tag 3** (`Super+s`): Music ([spotatui](https://github.com/marioortizmanero/spotatui))
+  - **Tag 4** (`Super+z`): Matrix chat ([iamb](https://iamb.chat/))
+  - **Tag 5** (`Super+x`): Web browser ([Helium](https://github.com/imputnet/helium))
+  - **Tag 6** (`Super+q`): Hardware EDA ([KiCad](https://www.kicad.org/))
+- **Keyboard Continuity**:
+  - Full Polish diacritics with dual-Alt (Left Alt and Right Alt).
+  - Fast buffer/tab navigation via `Alt+,` and `Alt+.` across Neovim, Kitty, Fish, aerc, and iamb.
+  - Consistent terminal modifiers (`Ctrl+C` copy/interrupt, `Ctrl+V` paste, `Ctrl+T` new tmux window, `Ctrl+N` sessionizer).
+- **Intelligent Package Auditing**: All installs through `paru` require a mandatory comment explaining their purpose, cleanly logged and tracked in `packages.txt`.
+
+---
 
 ## Quick Start
 
 ```bash
-# Clone dotfiles
-git clone <repo_url> ~/.dotfiles
+# 1. Clone repository
+git clone https://github.com/semitechen/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-git checkout arch
 
-# Unlock secrets (requires key exported from previous machine)
+# 2. Unlock sensitive secrets & configs
 git-crypt unlock /path/to/dotfiles.key
 
-# Automated system bootstrap (installs packages, stows configs, enables services)
+# 3. Bootstrap entire system (installs packages, stows configs, enables services)
 ./kickstart.sh
 ```
 
-## Structure
+---
 
-- `aerc/`: TUI email client configuration.
-- `beets/`: Music library management and DJ plugins.
-- `darktable/`: Photography workflow, custom styles, shortcuts, and configuration.
-- `fish/`: Shell configuration and utility functions.
-- `gemini/`: Gemini / Antigravity CLI configuration, MCP servers, and custom skills.
-- `gh/`: GitHub CLI configuration and credentials (encrypted).
-- `git/`: Git configuration.
-- `kitty/`: Terminal emulator configuration.
-- `nvim/`: Neovim configuration.
-- `paru/`: Package management wrapper enforcing mandatory comments into `packages.txt`, with pacman/yay redirection.
-- `rofi/`: Application launcher, command runner, and window switcher in Tokyo Night palette (replacing Raycast).
-- `spotatui/`: Spotify TUI client configuration.
-- `tmux/`: Terminal multiplexer and plugins.
-- `vpn/`: OpenVPN profiles and credentials (encrypted).
-- `wallpapers/`: System backgrounds and new tab pages.
-- `xinit/`: X11 session initialization (`~/.xinitrc`, dual-Alt Polish layout).
-- `xorg/`: System-wide X11 configuration snippets (`00-keyboard.conf`).
-- `yazi/`: Terminal file manager configuration.
+## Repository Structure
+
+| Package | Purpose |
+| :--- | :--- |
+| `aerc/` | Terminal email client configured for IMAP/SMTP accounts with image & HTML filters |
+| `beets/` | Music cataloger, acoustic analyzer, and DJ playlist management plugins |
+| `darktable/` | Non-destructive RAW photography workflow and custom camera styles |
+| `fastfetch/` | Minimalist system information fetch tool styled in Tokyo Night |
+| `fish/` | Interactive shell with autosuggestions, git prompt, and paru command translation |
+| `gemini/` | Gemini CLI & Antigravity configuration, MCP servers, and custom skills |
+| `gh/` | GitHub CLI configuration and authenticated credentials (encrypted) |
+| `git/` | Global Git configuration, default branch naming, and diff/merge helpers |
+| `handlr/` | High-performance system opener routing MIME types and URLs to dedicated tools |
+| `iamb/` | Terminal Matrix chat client configured with Tokyo Night palette |
+| `kitty/` | GPU-accelerated terminal with JetBrainsMono Nerd Font & CJK fallback glyphs |
+| `nvim/` | Modal configuration in Lua managed with `lazy.nvim`, Treesitter, and Mason LSPs |
+| `paru/` | Paru package manager wrapper enforcing reason comments logged into `packages.txt` |
+| `picom/` | Lightweight GLX compositor configured for tear-free instant rendering |
+| `rofi/` | Application launcher and window switcher in Tokyo Night palette |
+| `spotatui/` | Lightweight terminal Spotify client with MPRIS daemon integration |
+| `ssh/` | SSH client host configurations and hardware key definitions (encrypted) |
+| `systemd/` | User-level systemd units and automated cleanup timers |
+| `tmux/` | Terminal multiplexer with TPM plugins, Tokyo Night powerline, and fuzzy project switcher |
+| `vpn/` | OpenVPN profiles and secure network configurations (encrypted) |
+| `wallpapers/` | Minimal system wallpapers and local browser assets |
+| `xinit/` | X11 initialization (`~/.xinitrc`), HiDPI cursor scaling, and tag autostarts |
+| `xorg/` | System-wide input snippets for keyboard layout and libinput touchpad gestures |
+| `yazi/` | Terminal file manager with image previews, integrated as GUI file chooser portal |
+
+---
 
 ## Security
 
-Sensitive files defined in `.gitattributes` are encrypted at rest in the repository. Use `git-crypt export-key` to back up the master key.
+Sensitive files (SSH configurations, personal API keys, VPN tunnels, and credentials) specified in `.gitattributes` are encrypted at rest with `git-crypt`. Use `git-crypt export-key <path>` to back up keys securely.

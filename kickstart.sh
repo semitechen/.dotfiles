@@ -5,7 +5,7 @@
 # Assumes:
 # 1. Fresh Arch Linux installation (e.g. minimal archinstall)
 # 2. git and paru installed
-# 3. ~/.dotfiles cloned on branch 'arch' and decrypted with git-crypt unlock
+# 3. ~/.dotfiles cloned and decrypted with git-crypt unlock
 #
 set -euo pipefail
 
