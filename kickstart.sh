@@ -233,6 +233,7 @@ STOW_PACKAGES=(
     handlr
     picom
     helium
+    easyeffects
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -371,6 +372,12 @@ fi
 # User-level PipeWire audio services
 systemctl --user enable --now pipewire pipewire-pulse wireplumber 2>/dev/null || true
 echo -e "${GREEN}✓ Enabled PipeWire and WirePlumber audio stack.${RESET}"
+
+# User-level EasyEffects audio daemon (Framework 13 speaker DSP)
+if command -v easyeffects >/dev/null 2>&1; then
+    systemctl --user enable --now easyeffects 2>/dev/null || true
+    echo -e "${GREEN}✓ Enabled EasyEffects audio DSP service.${RESET}"
+fi
 
 # User-level automatic Downloads cleanup (> 30 days) via systemd-tmpfiles
 systemctl --user enable --now systemd-tmpfiles-clean.timer 2>/dev/null || true

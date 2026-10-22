@@ -49,6 +49,7 @@ git-crypt unlock /path/to/dotfiles.key
 | `aerc/` | Terminal email client configured for IMAP/SMTP accounts with image & HTML filters |
 | `beets/` | Music cataloger, acoustic analyzer, and DJ playlist management plugins |
 | `darktable/` | Non-destructive RAW photography workflow and custom camera styles |
+| `easyeffects/` | Speaker DSP tuning for Framework 13 Pro (IRS convolution, autoloading, systemd daemon) |
 | `fastfetch/` | Minimalist system information fetch tool styled in Tokyo Night |
 | `fish/` | Interactive shell with autosuggestions, git prompt, and paru command translation |
 | `gemini/` | Gemini CLI & Antigravity configuration, MCP servers, and custom skills |
