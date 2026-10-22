@@ -263,9 +263,9 @@ chmod 600 "$DOTFILES_DIR/ssh/.ssh/config" "$HOME/.ssh/config" 2>/dev/null || tru
 chmod 700 "$DOTFILES_DIR/vpn/.vpn" "$DOTFILES_DIR/vpn/.vpn"/* 2>/dev/null || true
 chmod 600 "$DOTFILES_DIR/vpn/.vpn"/*/* 2>/dev/null || true
 
-# 7. Apply system-wide X11 input configurations (Polish dual-Alt keyboard & Touchpad)
+# 7. Apply system-wide X11 configurations (Polish dual-Alt keyboard, Touchpad & VRR)
 if [ -d "$DOTFILES_DIR/xorg" ]; then
-    echo -e "${BLUE}::${RESET} ${BOLD}Installing system-wide X11 input configurations (keyboard & touchpad)...${RESET}"
+    echo -e "${BLUE}::${RESET} ${BOLD}Installing system-wide X11 configurations (keyboard, touchpad & VRR display)...${RESET}"
     sudo mkdir -p /etc/X11/xorg.conf.d
     sudo cp -f "$DOTFILES_DIR/xorg/"*.conf /etc/X11/xorg.conf.d/
     echo -e "${GREEN}✓ Installed X11 configurations in /etc/X11/xorg.conf.d/:${RESET}"

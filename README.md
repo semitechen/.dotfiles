@@ -69,7 +69,7 @@ git-crypt unlock /path/to/dotfiles.key
 | `vpn/` | OpenVPN profiles and secure network configurations (encrypted) |
 | `wallpapers/` | Minimal system wallpapers and local browser assets |
 | `xinit/` | X11 initialization (`~/.xinitrc`), HiDPI cursor scaling, and tag autostarts |
-| `xorg/` | System-wide input snippets for keyboard layout and libinput touchpad gestures |
+| `xorg/` | System-wide X11 snippets: Polish dual-Alt layout, touchpad gestures, and hardware VRR |
 | `yazi/` | Terminal file manager with image previews, integrated as GUI file chooser portal |
 
 ---
