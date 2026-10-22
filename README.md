@@ -64,7 +64,7 @@ git-crypt unlock /path/to/dotfiles.key
 | `rofi/` | Application launcher and window switcher in Tokyo Night palette |
 | `spotatui/` | Lightweight terminal Spotify client with MPRIS daemon integration |
 | `ssh/` | SSH client host configurations and hardware key definitions (encrypted) |
-| `systemd/` | User-level systemd units and automated cleanup timers |
+| `systemd/` | User-level systemd units, cleanup timers, and Btrfs suspend-then-hibernate automation |
 | `tmux/` | Terminal multiplexer with TPM plugins, Tokyo Night powerline, and fuzzy project switcher |
 | `udev/` | Framework 13 Pro power management rules, dynamic refresh rate switcher, and Wi-Fi powersave |
 | `vpn/` | OpenVPN profiles and secure network configurations (encrypted) |

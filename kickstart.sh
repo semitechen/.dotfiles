@@ -312,6 +312,12 @@ if systemctl list-unit-files tuned-ppd.service >/dev/null 2>&1; then
     echo -e "${GREEN}✓ Enabled tuned-ppd service.${RESET}"
 fi
 
+# Intel Thermal Management Daemon (thermald)
+if systemctl list-unit-files thermald.service >/dev/null 2>&1; then
+    sudo systemctl enable --now thermald
+    echo -e "${GREEN}✓ Enabled Intel thermal daemon (thermald).${RESET}"
+fi
+
 # SSD TRIM timer for Lexar NM790 NVMe
 if systemctl list-unit-files fstrim.timer >/dev/null 2>&1; then
     sudo systemctl enable --now fstrim.timer
@@ -348,6 +354,12 @@ vm.page-cluster = 0
 EOF
     sudo sysctl --system >/dev/null 2>&1 || true
     echo -e "${GREEN}✓ Applied optimal sysctl swappiness for zram.${RESET}"
+fi
+
+# Configure Btrfs swapfile and suspend-then-hibernate for backpack battery protection
+if [ -f "$DOTFILES_DIR/systemd/setup-hibernation.sh" ] && [ ! -f /swap/swapfile ]; then
+    echo -e "${BLUE}::${RESET} ${BOLD}Configuring Btrfs swapfile and suspend-then-hibernate...${RESET}"
+    sudo bash "$DOTFILES_DIR/systemd/setup-hibernation.sh" || true
 fi
 
 # Btrfs monthly scrub timer to verify checksums and integrity on Lexar SSD
