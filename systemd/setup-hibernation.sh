@@ -99,8 +99,6 @@ HandleLidSwitch=suspend-then-hibernate
 HandleLidSwitchExternalPower=suspend
 EOF
 
-systemctl restart systemd-logind 2>/dev/null || true
-
 echo -e "\n\033[1;32m✓ Suspend-then-hibernate successfully configured on Framework 13 Pro!\033[0m"
 echo "  Closing the lid will suspend immediately; after 2 hours on battery it will hibernate."
 swapon --show
