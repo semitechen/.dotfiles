@@ -1,0 +1,192 @@
+{
+    "output": {
+        "blocklist": [],
+        "equalizer": {
+            "balance": 0.0,
+            "bypass": false,
+            "input-gain": 0.0,
+            "left": {
+                "band0": {
+                    "frequency": 95.0,
+                    "gain": 0.0,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 1.0,
+                    "slope": "x2",
+                    "solo": false,
+                    "type": "Hi-pass"
+                },
+                "band1": {
+                    "frequency": 160.0,
+                    "gain": 4.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 1.2,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Bell"
+                },
+                "band2": {
+                    "frequency": 600.0,
+                    "gain": -7.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 3.5,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Notch"
+                },
+                "band3": {
+                    "frequency": 1250.0,
+                    "gain": -3.0,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 3.0,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Bell"
+                },
+                "band4": {
+                    "frequency": 2016.0,
+                    "gain": 4.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 0.7,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Bell"
+                },
+                "band5": {
+                    "frequency": 5272.0,
+                    "gain": 3.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 2.5,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Notch"
+                },
+                "band6": {
+                    "frequency": 10000.0,
+                    "gain": 1.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 0.7,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Hi-shelf"
+                }
+            },
+            "mode": "IIR",
+            "num-bands": 7,
+            "output-gain": 0.0,
+            "pitch-left": 0.0,
+            "pitch-right": 0.0,
+            "right": {
+                "band0": {
+                    "frequency": 95.0,
+                    "gain": 0.0,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 1.0,
+                    "slope": "x2",
+                    "solo": false,
+                    "type": "Hi-pass"
+                },
+                "band1": {
+                    "frequency": 160.0,
+                    "gain": 4.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 1.2,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Bell"
+                },
+                "band2": {
+                    "frequency": 600.0,
+                    "gain": -7.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 3.5,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Notch"
+                },
+                "band3": {
+                    "frequency": 1250.0,
+                    "gain": -3.0,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 3.0,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Bell"
+                },
+                "band4": {
+                    "frequency": 2016.0,
+                    "gain": 4.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 0.7,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Bell"
+                },
+                "band5": {
+                    "frequency": 5272.0,
+                    "gain": 3.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 2.5,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Notch"
+                },
+                "band6": {
+                    "frequency": 10000.0,
+                    "gain": 1.5,
+                    "mode": "RLC (BT)",
+                    "mute": false,
+                    "q": 0.7,
+                    "slope": "x1",
+                    "solo": false,
+                    "type": "Hi-shelf"
+                }
+            },
+            "split-channels": false
+        },
+        "loudness": {
+            "bypass": false,
+            "clipping": false,
+            "clipping-range": 6.0,
+            "fft": "4096",
+            "input-gain": 0.0,
+            "output-gain": 0.0,
+            "std": "ISO226-2003",
+            "volume": 6.999999999999991
+        },
+        "plugins_order": [
+            "loudness",
+            "equalizer",
+            "limiter"
+        ],
+        "limiter": {
+            "alr": false,
+            "attack": 2.0,
+            "bypass": false,
+            "dithering": "None",
+            "external-sidechain": false,
+            "gain-boost": false,
+            "input-gain": 0.0,
+            "lookahead": 4.0,
+            "mode": "Herm Thin",
+            "output-gain": 0.0,
+            "oversampling": "Half x4(2L)",
+            "release": 8.0,
+            "sidechain-preamp": 0.0,
+            "stereo-link": 100.0,
+            "threshold": -0.5
+        }
+    }
+}
