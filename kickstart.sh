@@ -232,6 +232,7 @@ STOW_PACKAGES=(
     fastfetch
     handlr
     picom
+    helium
 )
 
 for pkg in "${STOW_PACKAGES[@]}"; do

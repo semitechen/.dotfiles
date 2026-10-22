@@ -55,6 +55,7 @@ git-crypt unlock /path/to/dotfiles.key
 | `gh/` | GitHub CLI configuration and authenticated credentials (encrypted) |
 | `git/` | Global Git configuration, default branch naming, and diff/merge helpers |
 | `handlr/` | High-performance system opener routing MIME types and URLs to dedicated tools |
+| `helium/` | Lightweight Chromium browser configuration and VA-API hardware video flags |
 | `iamb/` | Terminal Matrix chat client configured with Tokyo Night palette |
 | `kitty/` | GPU-accelerated terminal with JetBrainsMono Nerd Font & CJK fallback glyphs |
 | `nvim/` | Modal configuration in Lua managed with `lazy.nvim`, Treesitter, and Mason LSPs |
