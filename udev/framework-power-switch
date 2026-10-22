@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# framework-power-switch: Triggered by udev on AC plug/unplug events
+#
+
+AC_STATE=$(cat /sys/class/power_supply/ACAD/online 2>/dev/null || echo 1)
+
+# Helper to execute commands in active X11 session
+run_x11() {
+    local cmd="$1"
+    local user="semitechen"
+    if [ -S "/tmp/.X11-unix/X0" ]; then
+        sudo -u "$user" DISPLAY=:0 XAUTHORITY="/home/$user/.Xauthority" bash -c "$cmd" 2>/dev/null || true
+    fi
+}
+
+if [ "$AC_STATE" -eq 1 ]; then
+    # --- AC CONNECTED ---
+    /usr/bin/tuned-adm profile balanced 2>/dev/null || true
+    echo default > /sys/module/pcie_aspm/parameters/policy 2>/dev/null || true
+    run_x11 "xrandr --output eDP-1 --mode 2880x1920 --rate 120.00"
+else
+    # --- BATTERY DISCHARGING ---
+    /usr/bin/tuned-adm profile balanced-battery 2>/dev/null || true
+    echo powersupersave > /sys/module/pcie_aspm/parameters/policy 2>/dev/null || true
+    run_x11 "xrandr --output eDP-1 --mode 2880x1920 --rate 60.00"
+fi

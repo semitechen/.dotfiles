@@ -22,6 +22,7 @@ Managed with [GNU Stow](https://www.gnu.org/software/stow/) and secured at rest 
   - Fast buffer/tab navigation via `Alt+,` and `Alt+.` across Neovim, Kitty, Fish, aerc, and iamb.
   - Consistent terminal modifiers (`Ctrl+C` copy/interrupt, `Ctrl+V` paste, `Ctrl+T` new tmux window, `Ctrl+N` sessionizer).
 - **Intelligent Package Auditing**: All installs through `paru` require a mandatory comment explaining their purpose, cleanly logged and tracked in `packages.txt`.
+- **Dynamic Power Management**: Automated profile and display refresh rate switching for Framework 13 Pro (120Hz on AC, 60Hz + TuneD battery profile on battery) with `power-status` and `power-profile` terminal utilities.
 
 ---
 
@@ -64,6 +65,7 @@ git-crypt unlock /path/to/dotfiles.key
 | `ssh/` | SSH client host configurations and hardware key definitions (encrypted) |
 | `systemd/` | User-level systemd units and automated cleanup timers |
 | `tmux/` | Terminal multiplexer with TPM plugins, Tokyo Night powerline, and fuzzy project switcher |
+| `udev/` | Framework 13 Pro power management rules, dynamic refresh rate switcher, and Wi-Fi powersave |
 | `vpn/` | OpenVPN profiles and secure network configurations (encrypted) |
 | `wallpapers/` | Minimal system wallpapers and local browser assets |
 | `xinit/` | X11 initialization (`~/.xinitrc`), HiDPI cursor scaling, and tag autostarts |

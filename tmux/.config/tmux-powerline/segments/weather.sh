@@ -65,7 +65,7 @@ __process_settings() {
 	fi
 	if [ "$TMUX_POWERLINE_SEG_WEATHER_LAT" = "auto" ] || [ "$TMUX_POWERLINE_SEG_WEATHER_LON" = "auto" ] || [ -z "$TMUX_POWERLINE_SEG_WEATHER_LON" ] || [ -z "$TMUX_POWERLINE_SEG_WEATHER_LAT" ]; then
 		if ! __get_auto_location; then
-			exit 8
+			return 1
 		fi
 	fi
 }
@@ -73,10 +73,6 @@ __process_settings() {
 __yrno() {
 	if ! command -v curl >/dev/null 2>&1; then
 		tp_err_seg "Err: curl not installed"
-		return 1
-	fi
-	if ! command -v jq >/dev/null 2>&1; then
-		tp_err_seg "Err: jq not installed"
 		return 1
 	fi
 
@@ -95,8 +91,12 @@ __yrno() {
 			tp_err_seg "Err: yr.no err: error in api return"
 			return 1
 		fi
-		degree=$(echo "$weather_data" | jq -r '.properties.timeseries | .[0].data.instant.details.air_temperature')
-		condition=$(echo "$weather_data" | jq -r '.properties.timeseries | .[0].data.next_1_hours.summary.symbol_code')
+		if command -v jq >/dev/null 2>&1; then
+			degree=$(echo "$weather_data" | jq -r '.properties.timeseries | .[0].data.instant.details.air_temperature')
+			condition=$(echo "$weather_data" | jq -r '.properties.timeseries | .[0].data.next_1_hours.summary.symbol_code')
+		else
+			read -r degree condition <<< "$(echo "$weather_data" | python3 -c "import sys, json; d=json.load(sys.stdin)['properties']['timeseries'][0]['data']; print(d['instant']['details']['air_temperature'], d['next_1_hours']['summary']['symbol_code'])" 2>/dev/null)"
+		fi
 	fi
 
 	if [ -z "$degree" ]; then
@@ -199,15 +199,14 @@ __read_file_last_update() {
 }
 
 __weather_cache_read() {
-	local last_update time_now up_to_date
+	local last_update time_now
 	if [ ! -f "$TMUX_POWERLINE_SEG_WEATHER_CACHE_FILE_WEATHER" ]; then
 		echo ""
 		return
 	fi
 	last_update=$(__read_file_last_update "$TMUX_POWERLINE_SEG_WEATHER_CACHE_FILE_WEATHER")
 	time_now=$(date +%s)
-	up_to_date=$(echo "(${time_now}-${last_update}) < ${TMUX_POWERLINE_SEG_WEATHER_UPDATE_PERIOD}" | bc)
-	if [ "$up_to_date" -eq 1 ]; then
+	if (( (time_now - last_update) < TMUX_POWERLINE_SEG_WEATHER_UPDATE_PERIOD )); then
 		__read_file_content "$TMUX_POWERLINE_SEG_WEATHER_CACHE_FILE_WEATHER"
 	else
 		echo ""
@@ -250,17 +249,33 @@ __get_auto_location() {
     fi
 
     local location_data
-    for api in "https://ipinfo.io/json" "https://ipapi.co/json"; do
+    for api in "http://ip-api.com/json" "https://ipwho.is" "https://ipinfo.io/json" "https://ipapi.co/json"; do
         if location_data=$(curl --max-time 4 -s "$api"); then
             case "$api" in
+                *ip-api.com*|*ipwho.is*)
+                    if command -v jq >/dev/null 2>&1; then
+                        TMUX_POWERLINE_SEG_WEATHER_LAT=$(echo "$location_data" | jq -r '.lat // .latitude')
+                        TMUX_POWERLINE_SEG_WEATHER_LON=$(echo "$location_data" | jq -r '.lon // .longitude')
+                    else
+                        read -r TMUX_POWERLINE_SEG_WEATHER_LAT TMUX_POWERLINE_SEG_WEATHER_LON <<< "$(echo "$location_data" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('lat') or d.get('latitude', ''), d.get('lon') or d.get('longitude', ''))" 2>/dev/null)"
+                    fi
+                    ;;
                 *ipinfo.io*)
-                    IFS=',' read -ra loc <<< "$(echo "$location_data" | jq -r '.loc')"
+                    if command -v jq >/dev/null 2>&1; then
+                        IFS=',' read -ra loc <<< "$(echo "$location_data" | jq -r '.loc')"
+                    else
+                        IFS=',' read -ra loc <<< "$(echo "$location_data" | python3 -c "import sys, json; print(json.load(sys.stdin).get('loc', ''))" 2>/dev/null)"
+                    fi
                     TMUX_POWERLINE_SEG_WEATHER_LAT="${loc[0]}"
                     TMUX_POWERLINE_SEG_WEATHER_LON="${loc[1]}"
                     ;;
                 *ipapi.co*)
-                    TMUX_POWERLINE_SEG_WEATHER_LAT=$(echo "$location_data" | jq -r '.latitude')
-                    TMUX_POWERLINE_SEG_WEATHER_LON=$(echo "$location_data" | jq -r '.longitude')
+                    if command -v jq >/dev/null 2>&1; then
+                        TMUX_POWERLINE_SEG_WEATHER_LAT=$(echo "$location_data" | jq -r '.latitude')
+                        TMUX_POWERLINE_SEG_WEATHER_LON=$(echo "$location_data" | jq -r '.longitude')
+                    else
+                        read -r TMUX_POWERLINE_SEG_WEATHER_LAT TMUX_POWERLINE_SEG_WEATHER_LON <<< "$(echo "$location_data" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('latitude', ''), d.get('longitude', ''))" 2>/dev/null)"
+                    fi
                     ;;
             esac
 
@@ -286,6 +301,8 @@ __get_auto_location() {
         fi
     fi
 
+    # Cache failure to prevent repeated network spam on short refresh intervals
+    __write_to_file_with_last_updated "$TMUX_POWERLINE_SEG_WEATHER_CACHE_FILE_LOCATION" "failed"
     tp_err_seg "Err: Could not detect location automatically"
     return 1
 }

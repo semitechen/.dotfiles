@@ -1,0 +1,5 @@
+# Enable runtime power management for all PCI devices (NVMe SSD, GPU, Audio, Wi-Fi)
+ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
+
+# Framework 13 Pro dynamic power profile switching on AC / Battery events
+SUBSYSTEM=="power_supply", KERNEL=="ACAD", ACTION=="change", RUN+="/usr/local/bin/framework-power-switch"

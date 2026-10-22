@@ -275,7 +275,18 @@ if [ -d "$DOTFILES_DIR/xorg" ]; then
     echo ""
 fi
 
-# 8. Configure & Enable Systemd Services
+# 8. Apply Framework 13 Pro power management & udev rules
+if [ -d "$DOTFILES_DIR/udev" ]; then
+    echo -e "${BLUE}::${RESET} ${BOLD}Installing Framework 13 Pro power management & udev rules...${RESET}"
+    sudo mkdir -p /etc/udev/rules.d /etc/NetworkManager/conf.d /usr/local/bin
+    [ -f "$DOTFILES_DIR/udev/99-framework-power.rules" ] && sudo cp -f "$DOTFILES_DIR/udev/99-framework-power.rules" /etc/udev/rules.d/
+    [ -f "$DOTFILES_DIR/udev/framework-power-switch" ] && sudo cp -f "$DOTFILES_DIR/udev/framework-power-switch" /usr/local/bin/ && sudo chmod 755 /usr/local/bin/framework-power-switch
+    [ -f "$DOTFILES_DIR/udev/default-wifi-powersave-on.conf" ] && sudo cp -f "$DOTFILES_DIR/udev/default-wifi-powersave-on.conf" /etc/NetworkManager/conf.d/
+    sudo udevadm control --reload-rules 2>/dev/null || true
+    echo -e "${GREEN}✓ Installed Framework 13 Pro power management rules.${RESET}\n"
+fi
+
+# 9. Configure & Enable Systemd Services
 echo -e "${BLUE}::${RESET} ${BOLD}Configuring system services for Framework 13 Pro...${RESET}"
 
 # NetworkManager

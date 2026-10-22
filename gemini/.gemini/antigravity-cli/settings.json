@@ -4,6 +4,8 @@
   "model": "Gemini 3.7 Flash (High)",
   "toolPermission": "always-proceed",
   "trustedWorkspaces": [
-    "/home/semitechen/.dotfiles"
+    "/home/semitechen/.dotfiles",
+    "/home/semitechen/.dotfiles/nvim/.config/nvim",
+    "/home/semitechen/.dwm"
   ]
 }
